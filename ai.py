@@ -6,14 +6,14 @@ import random
 
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
 
-def learn_digits():
+def learn_emotions():
     # Training the model
     inputs = []
     targets = []
     for emotion in emotions:
         path = os.path.join(os.path.dirname(__file__), "faces", "train", emotion)
-        for filename in os.listdir(path):
-            with Image.open(os.path.join(path, filename)) as image:
+        for file in os.listdir(path):
+            with Image.open(os.path.join(path, file)) as image:
                 inputs.append(np.array(image).flatten())
             targets.append(emotions.index(emotion))
     inputs = np.array(inputs)
@@ -26,34 +26,28 @@ def learn_digits():
     classifier.fit(inputs, targets)
 
     # Testing the model
-    test_large = []
+    test = []
+    test_file = []
     actual = []
-    test_filenames = []
     for emotion in emotions:
         path = os.path.join(os.path.dirname(__file__), "faces", "test", emotion)
-        for filename in os.listdir(path):
-            with Image.open(os.path.join(path, filename)) as image:
-                test_large.append(np.array(image).flatten())
-                test_filenames.append(filename)
-            actual.append(emotions.index(emotion))
-
-    random_indexes = random.sample(range(len(test_large)), 10)
-    test = [test_large[i] for i in random_indexes]
-    actual = [actual[i] for i in random_indexes]
-    test_filenames = [test_filenames[i] for i in random_indexes]
+        images = os.listdir(path)
+        random_image = images[random.randrange(0, len())]
+        with Image.open(os.path.join(path, random_image)) as image:
+            test.append(np.array(image).flatten())
+        test_file.append(random_image)
+        actual.append(emotions.index(emotion))
 
     test = np.array(test)
-    actual = np.array(actual)
 
     print(f'Shape of the test data:  {test.shape}')
-    print(f'Shape of the actual data: {actual.shape}')
 
     results = classifier.predict(test)
 
     for i in range(len(results)):
         print(f'NN predicts {emotions[results[i]].upper()} (It was {emotions[actual[i]].upper()})')
-        print('Image: ' + os.path.join(os.path.dirname(__file__), "faces", "test", emotions[actual[i]], test_filenames[i]))
+        print('Image: ' + os.path.join(os.path.dirname(__file__), "faces", "test", emotions[actual[i]], test_file[i]))
         print()
 
 if __name__ == '__main__':
-    learn_digits()
+    learn_emotions()

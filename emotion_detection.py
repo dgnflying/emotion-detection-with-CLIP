@@ -32,7 +32,7 @@ def learn_emotions():
     for emotion in emotions:
         path = os.path.join(os.path.dirname(__file__), "faces", "test", emotion)
         images = os.listdir(path)
-        random_image = images[random.randrange(0, len())]
+        random_image = images[random.randrange(0, len(images))]
         with Image.open(os.path.join(path, random_image)) as image:
             test.append(np.array(image).flatten())
         test_file.append(random_image)
@@ -45,7 +45,7 @@ def learn_emotions():
     results = classifier.predict(test)
 
     for i in range(len(results)):
-        print(f'NN predicts {emotions[results[i]].upper()} (It was {emotions[actual[i]].upper()})')
+        print(f'NN predicts the face to be {emotions[results[i]].upper()} (It was {emotions[actual[i]].upper()})')
         print('Image: ' + os.path.join(os.path.dirname(__file__), "faces", "test", emotions[actual[i]], test_file[i]))
         print()
 

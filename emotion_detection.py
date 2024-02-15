@@ -5,6 +5,17 @@ import os
 import random
 from tqdm import tqdm
 
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+import matplotlib.pyplot as plt
+
+def display_accuracy(target, predictions, labels, title):
+    cm = confusion_matrix(target, predictions)
+    cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
+    fig, ax = plt.subplots()
+    cm_display.plot(ax=ax)
+    ax.set_title(title)
+    plt.show()
+
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
 
 def learn_emotions():
@@ -20,11 +31,10 @@ def learn_emotions():
     inputs = np.array(inputs)
     targets = np.array(targets)
 
-    print(f'Shape of the input data:  {inputs.shape}')
-    print(f'Shape of the output data: {targets.shape}')
-
     classifier = MLPClassifier(random_state=0, verbose=1)
     classifier.fit(inputs, targets)
+    results = classifier.predict(inputs)
+    display_accuracy(targets, results, emotions, 'Train Data')
 
     # Testing the model
     test = []

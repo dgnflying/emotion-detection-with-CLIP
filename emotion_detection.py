@@ -4,13 +4,15 @@ import numpy as np
 import os
 import random
 
+from tqdm import tqdm
+
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
 
 def learn_emotions():
     # Training the model
     inputs = []
     targets = []
-    for emotion in emotions:
+    for emotion in tqdm(emotions, desc='Extracting train data'):
         path = os.path.join(os.path.dirname(__file__), "faces", "train", emotion)
         for file in os.listdir(path):
             with Image.open(os.path.join(path, file)) as image:
@@ -22,14 +24,14 @@ def learn_emotions():
     print(f'Shape of the input data:  {inputs.shape}')
     print(f'Shape of the output data: {targets.shape}')
 
-    classifier = MLPClassifier(random_state=0)
+    classifier = MLPClassifier(random_state=0, verbose=1)
     classifier.fit(inputs, targets)
 
     # Testing the model
     test = []
     test_file = []
     actual = []
-    for emotion in emotions:
+    for emotion in tqdm(emotions, desc='Extracting test data'):
         path = os.path.join(os.path.dirname(__file__), "faces", "test", emotion)
         images = os.listdir(path)
         random_image = images[random.randrange(0, len(images))]

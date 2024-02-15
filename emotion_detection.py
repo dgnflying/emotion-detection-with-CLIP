@@ -3,7 +3,6 @@ from PIL import Image
 import numpy as np
 import os
 import random
-
 from tqdm import tqdm
 
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]

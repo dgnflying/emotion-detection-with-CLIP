@@ -27,16 +27,13 @@ def learn_emotions():
 
     # Testing the model
     test = []
-    test_file = []
     actual = []
     for emotion in emotions:
         path = os.path.join(os.path.dirname(__file__), "faces", "test", emotion)
-        images = os.listdir(path)
-        random_image = images[random.randrange(0, len(images))]
-        with Image.open(os.path.join(path, random_image)) as image:
-            test.append(np.array(image).flatten())
-        test_file.append(random_image)
-        actual.append(emotions.index(emotion))
+        for file in os.listdir(path):
+            with Image.open(os.path.join(path, file)) as image:
+                test.append(np.array(image).flatten())
+            actual.append(emotions.index(emotion))
 
     test = np.array(test)
 
@@ -44,10 +41,12 @@ def learn_emotions():
 
     results = classifier.predict(test)
 
+    correct = 0
     for i in range(len(results)):
-        print(f'NN predicts the face to be {emotions[results[i]].upper()} (It was {emotions[actual[i]].upper()})')
-        print('Image: ' + os.path.join(os.path.dirname(__file__), "faces", "test", emotions[actual[i]], test_file[i]))
-        print()
+        if results[i] == actual[i]:
+            correct += 1
+
+    print(f'The model was tested: {round(correct/len(results), 3) * 100}% accuracy')
 
 if __name__ == '__main__':
     learn_emotions()

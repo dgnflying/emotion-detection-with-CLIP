@@ -2,11 +2,11 @@ from sklearn.neural_network import MLPClassifier
 from PIL import Image
 import numpy as np
 import os
-import random
 from tqdm import tqdm
-
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 import matplotlib.pyplot as plt
+
+emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
 
 def display_accuracy(target, predictions, labels, title):
     cm = confusion_matrix(target, predictions)
@@ -16,40 +16,20 @@ def display_accuracy(target, predictions, labels, title):
     ax.set_title(title)
     plt.show()
 
-emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
-
-def learn_emotions():
+def train(inputs, targets):
     # Training the model
-    inputs = []
-    targets = []
-    for emotion in tqdm(emotions, desc='Extracting train data'):
-        path = os.path.join(os.path.dirname(__file__), "faces", "train", emotion)
-        for file in os.listdir(path):
-            with Image.open(os.path.join(path, file)) as image:
-                inputs.append(np.array(image).flatten())
-            targets.append(emotions.index(emotion))
-    inputs = np.array(inputs)
-    targets = np.array(targets)
-
-    classifier = MLPClassifier(random_state=0, verbose=1)
+    classifier = MLPClassifier(
+        random_state=0,
+        verbose=1,
+        hidden_layer_sizes=(100, 50),
+        max_iter=500,
+    )
     classifier.fit(inputs, targets)
-    results = classifier.predict(inputs)
-    display_accuracy(targets, results, emotions, 'Train Data')
 
+    return classifier
+
+def predict(classifier, test, actual):
     # Testing the model
-    test = []
-    actual = []
-    for emotion in tqdm(emotions, desc='Extracting test data'):
-        path = os.path.join(os.path.dirname(__file__), "faces", "test", emotion)
-        for file in os.listdir(path):
-            with Image.open(os.path.join(path, file)) as image:
-                test.append(np.array(image).flatten())
-            actual.append(emotions.index(emotion))
-
-    test = np.array(test)
-
-    print(f'Shape of the test data:  {test.shape}')
-
     results = classifier.predict(test)
 
     correct = 0
@@ -59,5 +39,19 @@ def learn_emotions():
 
     print(f'The model was tested: {round(correct/len(results), 3) * 100}% accuracy')
 
+def grab_emotion_data(set):
+    images = []
+    image_emotions = []
+    for emotion in tqdm(emotions, desc='Extracting training data'):
+        path = os.path.join(os.path.dirname(__file__), "faces", set, emotion)
+        for file in os.listdir(path):
+            with Image.open(os.path.join(path, file)) as image:
+                images.append(np.array(image).flatten())
+            image_emotions.append(emotions.index(emotion))
+    return np.array(images), np.array(image_emotions)
+
 if __name__ == '__main__':
-    learn_emotions()
+    inputs, targets = grab_emotion_data("train")
+    emotion_ai = train(inputs, targets)
+    test_inputs, test_actuals = grab_emotion_data("test")
+    predict(emotion_ai, test_inputs, test_actuals)

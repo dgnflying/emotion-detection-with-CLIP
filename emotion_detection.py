@@ -33,7 +33,7 @@ def train(inputs, targets):
     classifier = MLPClassifier(
         random_state=0,
         verbose=1,
-        hidden_layer_sizes=(3000,)
+        hidden_layer_sizes=(3000, 500, 200, 100)
     )
     classifier.fit(inputs, targets)
 

@@ -39,6 +39,8 @@ def predict(classifier, test, actual):
 
     print(f'The model was tested: {round(correct/len(results), 3) * 100}% accuracy')
 
+    print(classifier.loss_curve_)
+
 def grab_emotion_data(set):
     images = []
     image_emotions = []

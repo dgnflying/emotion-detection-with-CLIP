@@ -11,7 +11,7 @@ emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprise
 def emotion_data(set):
     images = []
     image_emotions = []
-    for emotion in tqdm(emotions, desc='Extracting training data'):
+    for emotion in tqdm(emotions, desc=f'Extracting {set}ing data'):
         path = os.path.join(os.path.dirname(__file__), "faces", set, emotion)
         for file in os.listdir(path):
             with Image.open(os.path.join(path, file)) as image:

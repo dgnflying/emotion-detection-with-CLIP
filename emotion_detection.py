@@ -11,7 +11,7 @@ emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprise
 def display_accuracy(target, predictions, labels, title):
     cm = confusion_matrix(target, predictions)
     cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     cm_display.plot(ax=ax)
     ax.set_title(title)
     plt.show()

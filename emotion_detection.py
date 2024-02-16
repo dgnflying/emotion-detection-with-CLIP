@@ -34,8 +34,6 @@ def train(inputs, targets):
         random_state=0,
         verbose=1,
         hidden_layer_sizes=(1000, 500, 100),
-        learning_rate_init=0.0001,
-        batch_size=64
     )
     classifier.fit(inputs, targets)
 

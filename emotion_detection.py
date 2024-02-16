@@ -8,6 +8,17 @@ import matplotlib.pyplot as plt
 
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
 
+def emotion_data(set):
+    images = []
+    image_emotions = []
+    for emotion in tqdm(emotions, desc='Extracting training data'):
+        path = os.path.join(os.path.dirname(__file__), "faces", set, emotion)
+        for file in os.listdir(path):
+            with Image.open(os.path.join(path, file)) as image:
+                images.append(np.array(image).flatten())
+            image_emotions.append(emotions.index(emotion))
+    return np.array(images), np.array(image_emotions)
+
 def display_accuracy(target, predictions, labels, title):
     cm = confusion_matrix(target, predictions)
     cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
@@ -28,7 +39,7 @@ def train(inputs, targets):
 
     return classifier
 
-def predict(classifier, test, actual):
+def test(classifier, test, actual):
     # Testing the model
     results = classifier.predict(test)
 
@@ -41,19 +52,10 @@ def predict(classifier, test, actual):
 
     print(classifier.loss_curve_)
 
-def grab_emotion_data(set):
-    images = []
-    image_emotions = []
-    for emotion in tqdm(emotions, desc='Extracting training data'):
-        path = os.path.join(os.path.dirname(__file__), "faces", set, emotion)
-        for file in os.listdir(path):
-            with Image.open(os.path.join(path, file)) as image:
-                images.append(np.array(image).flatten())
-            image_emotions.append(emotions.index(emotion))
-    return np.array(images), np.array(image_emotions)
+    display_accuracy(actual, results, emotions, "Train Data")
 
 if __name__ == '__main__':
-    inputs, targets = grab_emotion_data("train")
+    inputs, targets = emotion_data("train")
     emotion_ai = train(inputs, targets)
-    test_inputs, test_actuals = grab_emotion_data("test")
-    predict(emotion_ai, test_inputs, test_actuals)
+    test_inputs, test_actuals = emotion_data("test")
+    test(emotion_ai, test_inputs, test_actuals)

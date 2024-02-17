@@ -1,10 +1,12 @@
 from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
 from PIL import Image
 import numpy as np
 import os
 from tqdm import tqdm
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 import matplotlib.pyplot as plt
+import time
 
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
 
@@ -19,41 +21,49 @@ def emotion_data(set):
             image_emotions.append(emotions.index(emotion))
     return np.array(images), np.array(image_emotions)
 
-def display_test_data(predictions, targets, losses, labels, title):
-    plt.plot(np.arange(len(losses)), losses)
+def display_test_data(predictions, targets, labels, title, losses=False,):
     cm = confusion_matrix(targets, predictions)
     cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
     _, ax = plt.subplots()
     cm_display.plot(ax=ax)
     ax.set_title(title)
+    if losses:
+        plt.plot(np.arange(len(losses)), losses)
     plt.show()
 
 def train(inputs, targets):
+    # classifier = MLPClassifier(
+    #     random_state=0,
+    #     verbose=1,
+    #     hidden_layer_sizes=(1000, 100, 50),
+    # )
     # Training the model
-    classifier = MLPClassifier(
+    classifier = RandomForestClassifier(
         random_state=0,
-        verbose=1,
-        hidden_layer_sizes=(1000, 500, 100),
+        verbose=2,
+        n_estimators=5000
     )
     classifier.fit(inputs, targets)
 
     return classifier
 
-def test(classifier, test, actual):
+def test(classifier, tests, actuals):
     # Testing the model
-    results = classifier.predict(test)
+    results = classifier.predict(tests)
 
     correct = 0
-    for i in range(len(results)):
-        if results[i] == actual[i]:
+    for result, actual in zip(results, actuals):
+        if result == actual:
             correct += 1
 
-    print(f'The model was tested: {round(correct/len(results), 3) * 100}% accuracy')
+    display_test_data(predictions=results, targets=actuals, labels=emotions, title="Train Data")
 
-    display_test_data(results, actual, classifier.loss_curve_, emotions, "Train Data")
-
+    print(f'The model was tested and returned with {round(correct/len(results), 3) * 100}% accuracy')
 if __name__ == '__main__':
+    start = time.perf_counter()
     inputs, targets = emotion_data("train")
     emotion_ai = train(inputs, targets)
     test_inputs, test_actuals = emotion_data("test")
     test(emotion_ai, test_inputs, test_actuals)
+    print()
+    print(f'Emotion model trained and tested in {(time.perf_counter() - start) // 60} minutes')

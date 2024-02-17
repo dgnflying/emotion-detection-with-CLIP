@@ -44,6 +44,7 @@ def train(inputs, targets):
         n_estimators=5000
     )
     classifier.fit(inputs, targets)
+    classifier
 
     return classifier
 

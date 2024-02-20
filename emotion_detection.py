@@ -7,6 +7,7 @@ from tqdm import tqdm
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 import matplotlib.pyplot as plt
 import time
+import pickle
 
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
 
@@ -21,7 +22,7 @@ def emotion_data(set):
             image_emotions.append(emotions.index(emotion))
     return np.array(images), np.array(image_emotions)
 
-def display_test_data(predictions, targets, labels, title, losses=False,):
+def display_data(predictions, targets, labels, title, losses=False,):
     cm = confusion_matrix(targets, predictions)
     cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
     _, ax = plt.subplots()
@@ -29,7 +30,6 @@ def display_test_data(predictions, targets, labels, title, losses=False,):
     ax.set_title(title)
     if losses:
         plt.plot(np.arange(len(losses)), losses)
-    plt.show()
 
 def train(inputs, targets):
     # classifier = MLPClassifier(
@@ -41,30 +41,38 @@ def train(inputs, targets):
     classifier = RandomForestClassifier(
         random_state=0,
         verbose=2,
-        n_estimators=5000
+        n_estimators=10000
     )
     classifier.fit(inputs, targets)
     classifier
 
     return classifier
 
-def test(classifier, tests, actuals):
+def test(classifier, set):
     # Testing the model
-    results = classifier.predict(tests)
+    inputs, actuals = emotion_data(set)
+    results = classifier.predict(inputs)
 
     correct = 0
     for result, actual in zip(results, actuals):
         if result == actual:
             correct += 1
 
-    display_test_data(predictions=results, targets=actuals, labels=emotions, title="Train Data")
-
+    display_data(predictions=results, targets=actuals, labels=emotions, title=f"{set.upper()} Data")
     print(f'The model was tested and returned with {round(correct/len(results), 3) * 100}% accuracy')
+
+def save_classifier(classifier):
+    with open("./model/random_forest.pickle", 'wb') as file:
+        pickle.dump(classifier, file)
+
+
 if __name__ == '__main__':
     start = time.perf_counter()
     inputs, targets = emotion_data("train")
     emotion_ai = train(inputs, targets)
-    test_inputs, test_actuals = emotion_data("test")
-    test(emotion_ai, test_inputs, test_actuals)
+    test(emotion_ai, "train")
+    test(emotion_ai, "test")
+    save_classifier(emotion_ai)
+    plt.show()
     print()
-    print(f'Emotion model trained and tested in {(time.perf_counter() - start) // 60} minutes')
+    print(f'Emotion model trained, tested and saved in {(time.perf_counter() - start) // 60} minutes')

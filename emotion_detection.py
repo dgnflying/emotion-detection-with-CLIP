@@ -58,19 +58,30 @@ def save_classifier(classifier):
 
 
 if __name__ == '__main__':
+    # Start timer
     start = time.perf_counter()
+
+    # Train the model on training data
     inputs, targets = emotion_data("train")
     emotion_ai = train(inputs, targets)
+
+    # Test the model on training data
     test(emotion_ai, "train")
+
+    # Test the model on testing data
     test(emotion_ai, "test")
+
+    # Display the results of tests
     plt.show()
+
+    # Save the model
     save_classifier(emotion_ai)
-    print()
+
+    # Stop timer and calculate elapsed time
     elapsed = (time.perf_counter() - start) // 60
     if elapsed > 60:
         elapsed //= 60
         elapsed = f"{elapsed} hours"
     else:
         elapsed = f"{elapsed} minutes"
-
     print(f'Emotion model trained, tested and saved in {elapsed} minutes')

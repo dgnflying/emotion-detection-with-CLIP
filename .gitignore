@@ -1,3 +1,6 @@
+# Trained model files
+*.pickle
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -42,7 +45,7 @@ coverage.xml
 # Rope
 .ropeproject
 
-# Django stuff:
+# Django
 *.log
 *.pot
 

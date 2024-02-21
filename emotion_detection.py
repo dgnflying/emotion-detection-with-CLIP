@@ -32,21 +32,12 @@ def display_data(predictions, targets, labels, title, losses=False,):
         plt.plot(np.arange(len(losses)), losses)
 
 def train(inputs, targets):
-    # classifier = MLPClassifier(
-    #     random_state=0,
-    #     verbose=1,
-    #     hidden_layer_sizes=(1000, 100, 50),
-    # )
     # Training the model
-    classifier = RandomForestClassifier(
+    return RandomForestClassifier(
         random_state=0,
         verbose=2,
         n_estimators=10000
-    )
-    classifier.fit(inputs, targets)
-    classifier
-
-    return classifier
+    ).fit(inputs, targets)
 
 def test(classifier, set):
     # Testing the model
@@ -72,7 +63,14 @@ if __name__ == '__main__':
     emotion_ai = train(inputs, targets)
     test(emotion_ai, "train")
     test(emotion_ai, "test")
-    save_classifier(emotion_ai)
     plt.show()
+    save_classifier(emotion_ai)
     print()
-    print(f'Emotion model trained, tested and saved in {(time.perf_counter() - start) // 60} minutes')
+    elapsed = (time.perf_counter() - start) // 60
+    if elapsed > 60:
+        elapsed //= 60
+        elapsed = f"{elapsed} hours"
+    else:
+        elapsed = f"{elapsed} minutes"
+
+    print(f'Emotion model trained, tested and saved in {elapsed} minutes')

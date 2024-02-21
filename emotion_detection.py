@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import time
 import pickle
 
+estimators = 100
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
 
 def emotion_data(set):
@@ -36,7 +37,7 @@ def train(inputs, targets):
     return RandomForestClassifier(
         random_state=0,
         verbose=2,
-        n_estimators=10000
+        n_estimators=estimators
     ).fit(inputs, targets)
 
 def test(classifier, set):
@@ -53,7 +54,7 @@ def test(classifier, set):
     print(f'The model was tested and returned with {round(correct/len(results), 3) * 100}% accuracy')
 
 def save_classifier(classifier):
-    with open("./model/random_forest.pickle", 'wb') as file:
+    with open(f"./model/random_forest_{estimators}.pickle", 'wb') as file:
         pickle.dump(classifier, file)
 
 
@@ -84,4 +85,4 @@ if __name__ == '__main__':
         elapsed = f"{elapsed} hours"
     else:
         elapsed = f"{elapsed} minutes"
-    print(f'Emotion model trained, tested and saved in {elapsed} minutes')
+    print(f'Emotion model trained, tested and saved in {elapsed}')

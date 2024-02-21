@@ -9,8 +9,23 @@ import matplotlib.pyplot as plt
 import time
 import pickle
 
-estimators = 100
+estimators = 1
 emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
+
+def format_time(seconds):
+    if seconds < 60:
+        return f"{seconds} seconds"
+    elif seconds < 3600:
+        minutes = seconds // 60
+        seconds %= 60
+        return f"{minutes} minutes and {seconds} seconds"
+    else:
+        hours = seconds // 3600
+        seconds %= 3600
+        minutes = seconds // 60
+        seconds %= 60
+        return f"{hours} hours, {minutes} minutes, and {seconds} seconds"
+
 
 def emotion_data(set):
     images = []
@@ -54,7 +69,7 @@ def test(classifier, set):
     print(f'The model was tested and returned with {round(correct/len(results), 3) * 100}% accuracy')
 
 def save_classifier(classifier):
-    with open(f"./model/random_forest_{estimators}.pickle", 'wb') as file:
+    with open(f"./models/random_forest_{estimators}.pickle", 'wb') as file:
         pickle.dump(classifier, file)
 
 
@@ -79,10 +94,4 @@ if __name__ == '__main__':
     save_classifier(emotion_ai)
 
     # Stop timer and calculate elapsed time
-    elapsed = (time.perf_counter() - start) // 60
-    if elapsed > 60:
-        elapsed //= 60
-        elapsed = f"{elapsed} hours"
-    else:
-        elapsed = f"{elapsed} minutes"
-    print(f'Emotion model trained, tested and saved in {elapsed}')
+    print(f'Emotion model trained, tested and saved in {format_time(round(time.perf_counter() - start))}')

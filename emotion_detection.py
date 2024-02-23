@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import time
 import pickle
 
-estimators = 1
-emotions = ["angry", "disgusted", "happy", "neutral", "sad", "scared", "surprised"]
+estimators = 10
+emotions = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
 
 def format_time(seconds):
     if seconds < 60:
@@ -69,11 +69,14 @@ def test(classifier, set):
     print(f'The model was tested and returned with {round(correct/len(results), 3) * 100}% accuracy')
 
 def save_classifier(classifier):
+    if not os.path.isdir("models"):
+        os.mkdir("models")
     with open(f"./models/random_forest_{estimators}.pickle", 'wb') as file:
         pickle.dump(classifier, file)
 
 
 if __name__ == '__main__':
+
     # Start timer
     start = time.perf_counter()
 

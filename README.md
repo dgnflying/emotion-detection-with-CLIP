@@ -21,4 +21,8 @@ An AI that detects emotion in the face.
 
 	```kaggle datasets download -d msambare/fer2013```
 
+
+
+	And rename the file to "faces"
+
 3. Run emotion_detection.py!

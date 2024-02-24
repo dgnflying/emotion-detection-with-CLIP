@@ -1,13 +1,14 @@
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import RandomForestClassifier
-from PIL import Image
-import numpy as np
 import os
-from tqdm import tqdm
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
-import matplotlib.pyplot as plt
 import time
 import pickle
+
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+from tqdm import tqdm
 
 estimators = 10
 emotions = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]

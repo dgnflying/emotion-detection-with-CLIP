@@ -8,8 +8,8 @@ An AI that detects emotion in the face.
 
 3. Install project dependencies:
 
-    ```pip install sklearn```
-    ```pip install PIL```
+    ```pip install scikit-learn```
+    ```pip install Pillow```
     ```pip install tqdm```
     ```pip install matplotlib```
 

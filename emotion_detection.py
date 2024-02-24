@@ -5,13 +5,12 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 from tqdm import tqdm
 
-estimators = 10
-emotions = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
+ESTIMATORS = 1
+EMOTIONS = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
 
 def format_time(seconds):
     if seconds < 60:
@@ -31,12 +30,12 @@ def format_time(seconds):
 def emotion_data(set):
     images = []
     image_emotions = []
-    for emotion in tqdm(emotions, desc=f'Extracting {set}ing data'):
+    for emotion in tqdm(EMOTIONS, desc=f'Extracting {set}ing data'):
         path = os.path.join(os.path.dirname(__file__), "faces", set, emotion)
         for file in os.listdir(path):
             with Image.open(os.path.join(path, file)) as image:
                 images.append(np.array(image).flatten())
-            image_emotions.append(emotions.index(emotion))
+            image_emotions.append(EMOTIONS.index(emotion))
     return np.array(images), np.array(image_emotions)
 
 def display_data(predictions, targets, labels, title, losses=False,):
@@ -53,7 +52,7 @@ def train(inputs, targets):
     return RandomForestClassifier(
         random_state=0,
         verbose=2,
-        n_estimators=estimators
+        n_estimators=ESTIMATORS
     ).fit(inputs, targets)
 
 def test(classifier, set):
@@ -66,13 +65,13 @@ def test(classifier, set):
         if result == actual:
             correct += 1
 
-    display_data(predictions=results, targets=actuals, labels=emotions, title=f"{set.upper()} Data")
+    display_data(predictions=results, targets=actuals, labels=EMOTIONS, title=f"{set.upper()} Data")
     print(f'The model was tested and returned with {round(correct/len(results), 3) * 100}% accuracy')
 
 def save_classifier(classifier):
     if not os.path.isdir("models"):
         os.mkdir("models")
-    with open(f"./models/random_forest_{estimators}.pickle", 'wb') as file:
+    with open(f"./models/random_forest_{ESTIMATORS}.pickle", 'wb') as file:
         pickle.dump(classifier, file)
 
 

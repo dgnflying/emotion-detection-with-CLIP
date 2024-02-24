@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 from tqdm import tqdm
 
-ESTIMATORS = 1
+ESTIMATORS = 100
 EMOTIONS = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
 
 def format_time(seconds):

@@ -54,4 +54,5 @@ docs/_build/
 
 # Project-specific files to ignore
 faces
+models
 .vscode

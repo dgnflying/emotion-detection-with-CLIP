@@ -27,11 +27,11 @@ def format_time(seconds):
         return f"{hours} hours, {minutes} minutes, and {seconds} seconds"
 
 
-def emotion_data(set):
+def emotion_data(dataset):
     images = []
     image_emotions = []
-    for emotion in tqdm(EMOTIONS, desc=f'Extracting {set}ing data'):
-        path = os.path.join(os.path.dirname(__file__), "faces", set, emotion)
+    for emotion in tqdm(EMOTIONS, desc=f'Extracting {dataset}ing data'):
+        path = os.path.join(os.path.dirname(__file__), "faces", dataset, emotion)
         for file in os.listdir(path):
             with Image.open(os.path.join(path, file)) as image:
                 images.append(np.array(image).flatten())
@@ -55,9 +55,9 @@ def train(inputs, targets):
         n_estimators=ESTIMATORS
     ).fit(inputs, targets)
 
-def test(classifier, set):
+def test(classifier, dataset):
     # Testing the model
-    inputs, actuals = emotion_data(set)
+    inputs, actuals = emotion_data(dataset)
     results = classifier.predict(inputs)
 
     correct = 0
@@ -65,7 +65,7 @@ def test(classifier, set):
         if result == actual:
             correct += 1
 
-    display_data(predictions=results, targets=actuals, labels=EMOTIONS, title=f"{set.upper()} Data")
+    display_data(predictions=results, targets=actuals, labels=EMOTIONS, title=f"{dataset.upper()} Data")
     print(f'The model was tested and returned with {round(correct/len(results), 3) * 100}% accuracy')
 
 def save_classifier(classifier):

@@ -1,28 +1,9 @@
-
 # emotion-detection-ai
-
 An AI that detects emotion in the face.
 
-  
-
 # Instructions
+1. Download the dataset at `https://www.kaggle.com/datasets/msambare/fer2013`
 
-  
-
-1. Install kaggle if you do not have it:
-
-  
-
-	```pip install kaggle```
-
-2. Download the faces dataset:
-
-  
-
-	```kaggle datasets download -d msambare/fer2013```
-
-
-
-	And rename the file to "faces"
+2. Unzip the file, add it to your workspace, and rename the file to "faces"
 
 3. Run emotion_detection.py!

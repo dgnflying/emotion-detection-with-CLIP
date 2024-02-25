@@ -26,7 +26,6 @@ def format_time(seconds):
         seconds %= 60
         return f"{hours} hours, {minutes} minutes, and {seconds} seconds"
 
-
 def emotion_data(dataset):
     images = []
     image_emotions = []

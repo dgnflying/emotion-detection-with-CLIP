@@ -10,9 +10,15 @@ from PIL import Image
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 from tqdm import tqdm
+from transformers import AutoProcessor, AutoModel
 
-ESTIMATORS = 100
 EMOTIONS = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
+
+parser = argparse.ArgumentParser(description="Train, test and save a Random Forest model for the use of detecting a certain emotion in one's face")
+
+parser.add_argument('--estimators', type=int, default=100, help='The amount of estimators in the Random Forest model')
+
+ESTIMATORS = parser.parse_args().estimators
 
 def format_time(seconds):
     if seconds < 60:
@@ -74,7 +80,6 @@ def save_classifier(classifier):
         os.mkdir("models")
     with open(f"./models/random_forest_{ESTIMATORS}.pickle", 'wb') as file:
         pickle.dump(classifier, file)
-
 
 if __name__ == '__main__':
 

@@ -41,14 +41,14 @@ def emotion_data(dataset):
         path = os.path.join(os.path.dirname(__file__), "faces", dataset, emotion)
         for file in os.listdir(path):
             with Image.open(os.path.join(path, file)) as image:
-                images.append(np.array(image))
+                images.append(np.array(image.convert("RGB")))
             image_emotions.append(EMOTIONS.index(emotion))
     model_id = 'openai/clip-vit-base-patch16'
     with torch.inference_mode():
         encoder = AutoModel.from_pretrained(model_id)
         processor = AutoProcessor.from_pretrained(model_id)
         img_batch = np.array(images)
-        print(img_batch.shape)
+        img_batch = np.moveaxis(img_batch, -1, 1)
         img_vecs = encoder(**processor(images=img_batch, return_tensors='np')).image_embeds
     return img_vecs, np.array(image_emotions)
 

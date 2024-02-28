@@ -16,7 +16,7 @@ EMOTIONS = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
 
 parser = argparse.ArgumentParser(description="Train, test and save a Random Forest model for the use of detecting a certain emotion in one's face")
 
-parser.add_argument('--estimators', type=int, default=100, help='The amount of estimators in the Random Forest model')
+parser.add_argument('--estimators', '-e', type=int, default=100, help='The amount of estimators in the Random Forest model')
 
 ESTIMATORS = parser.parse_args().estimators
 
@@ -41,9 +41,16 @@ def emotion_data(dataset):
         path = os.path.join(os.path.dirname(__file__), "faces", dataset, emotion)
         for file in os.listdir(path):
             with Image.open(os.path.join(path, file)) as image:
-                images.append(np.array(image).flatten())
+                images.append(np.array(image))
             image_emotions.append(EMOTIONS.index(emotion))
-    return np.array(images), np.array(image_emotions)
+    model_id = 'openai/clip-vit-base-patch16'
+    with torch.inference_mode():
+        encoder = AutoModel.from_pretrained(model_id)
+        processor = AutoProcessor.from_pretrained(model_id)
+        img_batch = np.array(images)
+        print(img_batch.shape)
+        img_vecs = encoder(**processor(images=img_batch, return_tensors='np')).image_embeds
+    return img_vecs, np.array(image_emotions)
 
 def display_data(predictions, targets, labels, title, losses=False,):
     cm = confusion_matrix(targets, predictions)
@@ -88,6 +95,7 @@ if __name__ == '__main__':
 
     # Train the model on training data
     inputs, targets = emotion_data("train")
+    print(inputs.shape, targets.shape)
     emotion_ai = train(inputs, targets)
 
     # Test the model on training data

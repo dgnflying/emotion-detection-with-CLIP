@@ -43,6 +43,7 @@ def emotion_data(dataset):
             with Image.open(os.path.join(path, file)) as image:
                 images.append(np.array(image.convert("RGB")))
             image_emotions.append(EMOTIONS.index(emotion))
+            break
     model_id = 'openai/clip-vit-base-patch16'
     with torch.inference_mode():
         encoder = AutoModel.from_pretrained(model_id)

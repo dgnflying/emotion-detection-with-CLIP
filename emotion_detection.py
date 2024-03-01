@@ -35,6 +35,7 @@ def format_time(seconds):
         return f"{hours} hours, {minutes} minutes, and {seconds} seconds"
 
 def emotion_data(dataset):
+
     images = []
     image_emotions = []
     for emotion in tqdm(EMOTIONS, desc=f'Extracting {dataset}ing data'):
@@ -43,15 +44,15 @@ def emotion_data(dataset):
             with Image.open(os.path.join(path, file)) as image:
                 images.append(np.array(image.convert("RGB")))
             image_emotions.append(EMOTIONS.index(emotion))
-            break
+
     model_id = 'openai/clip-vit-base-patch16'
     with torch.inference_mode():
         encoder = AutoModel.from_pretrained(model_id)
         processor = AutoProcessor.from_pretrained(model_id)
         img_batch = np.array(images)
-        img_batch = np.moveaxis(img_batch, -1, 1)
-        img_vecs = encoder(**processor(images=img_batch, return_tensors='np')).image_embeds
-    return img_vecs, np.array(image_emotions)
+        img_batch = torch.from_numpy(img_batch)
+        img_vecs = encoder(**processor(images=img_batch, return_tensors='pt')).image_embeds
+    return img_vecs.cpu().numpy(), np.array(image_emotions)
 
 def display_data(predictions, targets, labels, title, losses=False,):
     cm = confusion_matrix(targets, predictions)

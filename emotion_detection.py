@@ -49,8 +49,7 @@ def emotion_data(dataset):
     with torch.inference_mode():
         encoder = AutoModel.from_pretrained(model_id)
         processor = AutoProcessor.from_pretrained(model_id)
-        img_batch = np.array(images)
-        img_batch = torch.from_numpy(img_batch)
+        img_batch = torch.from_numpy(np.array(images))
         img_vecs = encoder(**processor(images=img_batch, return_tensors='np')).image_embeds
     return img_vecs, np.array(image_emotions)
 

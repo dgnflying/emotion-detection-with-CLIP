@@ -51,8 +51,8 @@ def emotion_data(dataset):
         processor = AutoProcessor.from_pretrained(model_id)
         img_batch = np.array(images)
         img_batch = torch.from_numpy(img_batch)
-        img_vecs = encoder(**processor(images=img_batch, return_tensors='pt')).image_embeds
-    return img_vecs.cpu().numpy(), np.array(image_emotions)
+        img_vecs = encoder(**processor(images=img_batch, return_tensors='np')).image_embeds
+    return img_vecs, np.array(image_emotions)
 
 def display_data(predictions, targets, labels, title, losses=False,):
     cm = confusion_matrix(targets, predictions)

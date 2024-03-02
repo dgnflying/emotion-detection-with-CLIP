@@ -12,13 +12,13 @@ from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 from tqdm import tqdm
 from transformers import AutoProcessor, AutoModel
 
-EMOTIONS = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
-
 parser = argparse.ArgumentParser(description="Train, test and save a Random Forest model for the use of detecting a certain emotion in one's face")
 
 parser.add_argument('--estimators', '-e', type=int, default=100, help='The amount of estimators in the Random Forest model')
 
 ESTIMATORS = parser.parse_args().estimators
+
+EMOTIONS = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
 
 def format_time(seconds):
     if seconds < 60:

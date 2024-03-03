@@ -2,6 +2,7 @@ import os
 import time
 import pickle
 import argparse
+from pathlib import Path
 
 import torch
 import matplotlib.pyplot as plt
@@ -11,14 +12,25 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 from tqdm import tqdm
 from transformers import AutoProcessor, AutoModel
+from torch.utils.data import TensorDataset, DataLoader
 
-EMOTIONS = ["angry", "disgust", "happy", "neutral", "sad", "fear", "surprise"]
+DATA_DIR = Path(__file__).parent / 'faces'
+TRAIN_DIR = DATA_DIR / 'train'
+TEST_DIR = DATA_DIR / 'test'
+if not TRAIN_DIR.exists() or not TEST_DIR.exists():
+    raise ValueError(
+        f'Expecting paths {str(TRAIN_DIR)} and {str(TEST_DIR)} to exist')
+if not (set(p.name for p in TEST_DIR.iterdir() if p.is_dir())
+        <= set(p.name for p in TRAIN_DIR.iterdir() if p.is_dir())):
+    raise ValueError('There are `test` labels that do not exist in `train`')
+EMOTIONS = sorted((p.name for p in TRAIN_DIR.iterdir() if p.is_dir()))
+MODEL_ID = 'openai/clip-vit-base-patch16'
 
 parser = argparse.ArgumentParser(description="Train, test and save a Random Forest model for the use of detecting a certain emotion in one's face")
 
 parser.add_argument('--estimators', '-e', type=int, default=100, help='The amount of estimators in the Random Forest model')
-
-ESTIMATORS = parser.parse_args().estimators
+parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size to feed encoder to produce vector embeddings')
+ARGS = parser.parse_args()
 
 def format_time(seconds):
     if seconds < 60:
@@ -34,25 +46,43 @@ def format_time(seconds):
         seconds %= 60
         return f"{hours} hours, {minutes} minutes, and {seconds} seconds"
 
-def emotion_data(dataset):
+def get_data(
+        directory,
+        model=AutoModel.from_pretrained(MODEL_ID).to('cpu' if torch.cuda.device_count() < 1 else 'cuda'),
+        processor=AutoProcessor.from_pretrained(MODEL_ID)):
 
-    images = []
-    image_emotions = []
-    for emotion in tqdm(EMOTIONS, desc=f'Extracting {dataset}ing data'):
-        path = os.path.join(os.path.dirname(__file__), "faces", dataset, emotion)
-        for file in os.listdir(path):
-            with Image.open(os.path.join(path, file)) as image:
-                images.append(np.array(image.convert("RGB")))
-            image_emotions.append(EMOTIONS.index(emotion))
-
-    model_id = 'openai/clip-vit-base-patch16'
-    with torch.inference_mode():
-        encoder = AutoModel.from_pretrained(model_id)
-        processor = AutoProcessor.from_pretrained(model_id)
-        img_batch = np.array(images)
-        img_batch = torch.from_numpy(img_batch)
-        img_vecs = encoder(**processor(images=img_batch, return_tensors='np')).image_embeds
-    return img_vecs, np.array(image_emotions)
+    preproc_filename = DATA_DIR / f'preprocessed_{directory.name}_data.npz'
+    if preproc_filename.exists():
+        print(f'Loading data from "{preproc_filename}"... ', end='')
+        npz = np.load(preproc_filename)
+        img_vecs = npz['img_vecs']
+        targets = npz['targets']
+        print('Done!')
+    else:
+        imgs = np.stack([
+            np.array(Image.open(filename).convert("RGB")).transpose(2, 0, 1)
+            for emotion in tqdm(EMOTIONS, desc=f'Extracting {directory.name} data')
+            for filename in sorted((directory / emotion).iterdir())[:10]
+            if filename.suffix == '.jpg'
+        ])
+        targets = np.array([
+            label
+            for label, emotion in enumerate(EMOTIONS)
+            for filename in sorted((directory / emotion).iterdir())[:10]
+            if filename.suffix == '.jpg'
+        ])
+        dataset = DataLoader(
+            TensorDataset(torch.from_numpy(imgs), torch.from_numpy(targets)),
+            batch_size=ARGS.batch_size,
+        )
+        with torch.inference_mode():
+            img_vecs = torch.cat([
+                model.get_image_features(**processor(images=img_batch, return_tensors='pt'))
+                for img_batch, labels in tqdm(dataset, desc='Producing image embeddings/vectors')
+            ])
+        img_vecs = np.array(img_vecs)
+        np.savez_compressed(preproc_filename, img_vecs=img_vecs, targets=targets)
+    return img_vecs, targets
 
 def display_data(predictions, targets, labels, title, losses=False,):
     cm = confusion_matrix(targets, predictions)
@@ -68,26 +98,22 @@ def train(inputs, targets):
     return RandomForestClassifier(
         random_state=0,
         verbose=2,
-        n_estimators=ESTIMATORS
+        n_estimators=ARGS.estimators
     ).fit(inputs, targets)
 
-def test(classifier, dataset):
+def evaluate(classifier, inputs, targets, partition):
     # Testing the model
-    inputs, actuals = emotion_data(dataset)
     results = classifier.predict(inputs)
-
-    correct = 0
-    for result, actual in zip(results, actuals):
-        if result == actual:
-            correct += 1
-
-    display_data(predictions=results, targets=actuals, labels=EMOTIONS, title=f"{dataset.upper()} Data")
-    print(f'The model was tested and returned with {round(correct/len(results), 3) * 100}% accuracy')
+    display_data(predictions=results, targets=targets, labels=EMOTIONS, title=f"{partition.upper()} Data")
+    print(
+        f'Accuracy on {partition} data: '
+        f'{(results == targets).mean() * 100:.3f}%'
+    )
 
 def save_classifier(classifier):
     if not os.path.isdir("models"):
         os.mkdir("models")
-    with open(f"./models/random_forest_{ESTIMATORS}.pickle", 'wb') as file:
+    with open(f"./models/random_forest_{ARGS.estimators}.pickle", 'wb') as file:
         pickle.dump(classifier, file)
 
 if __name__ == '__main__':
@@ -96,15 +122,15 @@ if __name__ == '__main__':
     start = time.perf_counter()
 
     # Train the model on training data
-    inputs, targets = emotion_data("train")
-    print(inputs.shape, targets.shape)
-    emotion_ai = train(inputs, targets)
+    train_inputs, train_targets = get_data(TRAIN_DIR)
+    test_inputs, test_targets = get_data(TEST_DIR)
+    emotion_ai = train(train_inputs, train_targets)
 
     # Test the model on training data
-    test(emotion_ai, "train")
+    evaluate(emotion_ai, train_inputs, train_targets, 'Train')
 
     # Test the model on testing data
-    test(emotion_ai, "test")
+    evaluate(emotion_ai, test_inputs, test_targets, 'Test')
 
     # Display the results of tests
     plt.show()

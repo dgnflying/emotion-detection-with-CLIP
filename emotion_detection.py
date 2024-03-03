@@ -27,7 +27,6 @@ EMOTIONS = sorted((p.name for p in TRAIN_DIR.iterdir() if p.is_dir()))
 MODEL_ID = 'openai/clip-vit-base-patch16'
 
 parser = argparse.ArgumentParser(description="Train, test and save a Random Forest model for the use of detecting a certain emotion in one's face")
-
 parser.add_argument('--estimators', '-e', type=int, default=100, help='The amount of estimators in the Random Forest model')
 parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size to feed encoder to produce vector embeddings')
 ARGS = parser.parse_args()
@@ -62,13 +61,13 @@ def get_data(
         imgs = np.stack([
             np.array(Image.open(filename).convert("RGB")).transpose(2, 0, 1)
             for emotion in tqdm(EMOTIONS, desc=f'Extracting {directory.name} data')
-            for filename in sorted((directory / emotion).iterdir())[:10]
+            for filename in sorted((directory / emotion).iterdir())
             if filename.suffix == '.jpg'
         ])
         targets = np.array([
             label
             for label, emotion in enumerate(EMOTIONS)
-            for filename in sorted((directory / emotion).iterdir())[:10]
+            for filename in sorted((directory / emotion).iterdir())
             if filename.suffix == '.jpg'
         ])
         dataset = DataLoader(

@@ -61,23 +61,25 @@ def get_data(
         imgs = np.stack([
             np.array(Image.open(filename).convert("RGB")).transpose(2, 0, 1)
             for emotion in tqdm(EMOTIONS, desc=f'Extracting {directory.name} data')
+            if (directory / emotion).exists()
             for filename in sorted((directory / emotion).iterdir())
             if filename.suffix == '.jpg'
         ])
         targets = np.array([
             label
             for label, emotion in enumerate(EMOTIONS)
+            if (directory / emotion).exists()
             for filename in sorted((directory / emotion).iterdir())
             if filename.suffix == '.jpg'
         ])
         dataset = DataLoader(
-            TensorDataset(torch.from_numpy(imgs), torch.from_numpy(targets)),
+            TensorDataset(torch.from_numpy(imgs)),
             batch_size=ARGS.batch_size,
         )
         with torch.inference_mode():
             img_vecs = torch.cat([
                 model.get_image_features(**processor(images=img_batch, return_tensors='pt'))
-                for img_batch, labels in tqdm(dataset, desc='Producing image embeddings/vectors')
+                for (img_batch,) in tqdm(dataset, desc='Producing image embeddings/vectors')
             ])
         img_vecs = np.array(img_vecs)
         np.savez_compressed(preproc_filename, img_vecs=img_vecs, targets=targets)

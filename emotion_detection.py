@@ -17,17 +17,19 @@ from torch.utils.data import TensorDataset, DataLoader
 DATA_DIR = Path(__file__).parent / 'faces'
 TRAIN_DIR = DATA_DIR / 'train'
 TEST_DIR = DATA_DIR / 'test'
-if not TRAIN_DIR.exists() or not TEST_DIR.exists():
-    raise ValueError(
-        f'Expecting paths {str(TRAIN_DIR)} and {str(TEST_DIR)} to exist')
-if not (set(p.name for p in TEST_DIR.iterdir() if p.is_dir())
-        <= set(p.name for p in TRAIN_DIR.iterdir() if p.is_dir())):
+if not TRAIN_DIR.exists():
+    raise ValueError(f'Path {str(TRAIN_DIR)} does not exist')
+if not TEST_DIR.exists():
+    raise ValueError(f'Path {str(TEST_DIR)} does not exist')
+if not (set(p.name for p in TEST_DIR.iterdir() if p.is_dir()) <= set(p.name for p in TRAIN_DIR.iterdir() if p.is_dir())):
     raise ValueError('There are `test` labels that do not exist in `train`')
 EMOTIONS = sorted((p.name for p in TRAIN_DIR.iterdir() if p.is_dir()))
 MODEL_ID = 'openai/clip-vit-base-patch16'
 
-parser = argparse.ArgumentParser(description="Train, test and save a Random Forest model for the use of detecting a certain emotion in one's face")
-parser.add_argument('--estimators', '-e', type=int, default=100, help='The amount of estimators in the Random Forest model')
+parser = argparse.ArgumentParser(
+    description="Train, test and save a Random Forest model for the use of detecting a certain emotion in a human face"
+)
+parser.add_argument('--estimators', '-e', type=int, default=1000, help='The amount of estimators in the Random Forest model')
 parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size to feed encoder to produce vector embeddings')
 ARGS = parser.parse_args()
 
@@ -47,9 +49,12 @@ def format_time(seconds):
 
 def get_data(
         directory,
-        model=AutoModel.from_pretrained(MODEL_ID).to('cpu' if torch.cuda.device_count() < 1 else 'cuda'),
-        processor=AutoProcessor.from_pretrained(MODEL_ID)):
+        model=AutoModel.from_pretrained(MODEL_ID),
+        processor=AutoProcessor.from_pretrained(MODEL_ID)
+    ):
 
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model = model.to(device)
     preproc_filename = DATA_DIR / f'preprocessed_{directory.name}_data.npz'
     if preproc_filename.exists():
         print(f'Loading data from "{preproc_filename}"... ', end='')
@@ -78,8 +83,8 @@ def get_data(
         )
         with torch.inference_mode():
             img_vecs = torch.cat([
-                model.get_image_features(**processor(images=img_batch, return_tensors='pt'))
-                for (img_batch,) in tqdm(dataset, desc='Producing image embeddings/vectors')
+                model.get_image_features(**processor(images=img_batch.to(device), return_tensors='pt'))
+                for (img_batch,) in tqdm(dataset, desc='Producing image vectors')
             ])
         img_vecs = np.array(img_vecs)
         np.savez_compressed(preproc_filename, img_vecs=img_vecs, targets=targets)
@@ -107,7 +112,7 @@ def evaluate(classifier, inputs, targets, partition):
     results = classifier.predict(inputs)
     display_data(predictions=results, targets=targets, labels=EMOTIONS, title=f"{partition.upper()} Data")
     print(
-        f'Accuracy on {partition} data: '
+        f'Accuracy on {partition.lower()}ing data: '
         f'{(results == targets).mean() * 100:.3f}%'
     )
 

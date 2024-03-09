@@ -53,9 +53,9 @@ def get_data(
         processor=AutoProcessor.from_pretrained(MODEL_ID)
     ):
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model = model.to(device)
-    preproc_filename = DATA_DIR / f'preprocessed_{directory.name}_data.npz'
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # model = model.to(device)
+    preproc_filename = DATA_DIR / "preprocessed_data" / f'preprocessed_{directory.name}_data.npz'
     if preproc_filename.exists():
         print(f'Loading data from "{preproc_filename}"... ', end='')
         npz = np.load(preproc_filename)
@@ -82,11 +82,17 @@ def get_data(
             batch_size=ARGS.batch_size,
         )
         with torch.inference_mode():
+            # breakpoint()
+            # img_vecs = torch.cat([
+            #     model.get_image_features(**processor(images=img_batch.to(device), return_tensors='pt'))
+            #     for (img_batch,) in tqdm(dataset, desc='Producing image vectors')
+            # ])
             img_vecs = torch.cat([
-                model.get_image_features(**processor(images=img_batch.to(device), return_tensors='pt'))
+                model.get_image_features(**processor(images=img_batch, return_tensors='pt'))
                 for (img_batch,) in tqdm(dataset, desc='Producing image vectors')
             ])
         img_vecs = np.array(img_vecs)
+        os.mkdir("faces" / "preprocessed_data")
         np.savez_compressed(preproc_filename, img_vecs=img_vecs, targets=targets)
     return img_vecs, targets
 

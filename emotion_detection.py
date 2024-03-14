@@ -1,4 +1,3 @@
-import os
 import time
 import pickle
 import argparse
@@ -53,8 +52,6 @@ def get_data(
         processor=AutoProcessor.from_pretrained(MODEL_ID)
     ):
 
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # model = model.to(device)
     preproc_filename = DATA_DIR / "preprocessed_data" / f'preprocessed_{directory.name}_data.npz'
     if preproc_filename.exists():
         print(f'Loading data from "{preproc_filename}"... ', end='')
@@ -81,18 +78,15 @@ def get_data(
             TensorDataset(torch.from_numpy(imgs)),
             batch_size=ARGS.batch_size,
         )
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = model.to(device)
         with torch.inference_mode():
-            # breakpoint()
-            # img_vecs = torch.cat([
-            #     model.get_image_features(**processor(images=img_batch.to(device), return_tensors='pt'))
-            #     for (img_batch,) in tqdm(dataset, desc='Producing image vectors')
-            # ])
             img_vecs = torch.cat([
-                model.get_image_features(**processor(images=img_batch, return_tensors='pt'))
+                model.get_image_features(**processor(images=img_batch, return_tensors='pt').to(device))
                 for (img_batch,) in tqdm(dataset, desc='Producing image vectors')
             ])
-        img_vecs = np.array(img_vecs)
-        os.mkdir("faces" / "preprocessed_data")
+        img_vecs = np.array(img_vecs.cpu())
+        Path("faces/preprocessed_data").mkdir(parents=True, exist_ok=True)
         np.savez_compressed(preproc_filename, img_vecs=img_vecs, targets=targets)
     return img_vecs, targets
 
@@ -123,9 +117,10 @@ def evaluate(classifier, inputs, targets, partition):
     )
 
 def save_classifier(classifier):
-    if not os.path.isdir("models"):
-        os.mkdir("models")
-    with open(f"./models/random_forest_{ARGS.estimators}.pickle", 'wb') as file:
+    MODELS_DIR = Path("models")
+    if not MODELS_DIR.is_dir():
+        MODELS_DIR.mkdir()
+    with open(MODELS_DIR / f"random_forest_{ARGS.estimators}.pickle", 'wb') as file:
         pickle.dump(classifier, file)
 
 if __name__ == '__main__':

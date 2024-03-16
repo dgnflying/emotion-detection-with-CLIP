@@ -29,4 +29,8 @@ An AI that detects emotion in the face.
 
   
 
-4. Run emotion_detection.py!
+4. Run emotion_detection.py
+
+
+   
+5. Be sure to change the model file's name from "new_model" to something more memorable

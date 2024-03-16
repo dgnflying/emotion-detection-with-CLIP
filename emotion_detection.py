@@ -3,34 +3,21 @@ import pickle
 import argparse
 from pathlib import Path
 
-import torch
 import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
-from tqdm import tqdm
-from transformers import AutoProcessor, AutoModel
-from torch.utils.data import TensorDataset, DataLoader
 
-DATA_DIR = Path(__file__).parent / 'faces'
-TRAIN_DIR = DATA_DIR / 'train'
-TEST_DIR = DATA_DIR / 'test'
-if not TRAIN_DIR.exists():
-    raise ValueError(f'Path {str(TRAIN_DIR)} does not exist')
-if not TEST_DIR.exists():
-    raise ValueError(f'Path {str(TEST_DIR)} does not exist')
-if not (set(p.name for p in TEST_DIR.iterdir() if p.is_dir()) <= set(p.name for p in TRAIN_DIR.iterdir() if p.is_dir())):
-    raise ValueError('There are `test` labels that do not exist in `train`')
-EMOTIONS = sorted((p.name for p in TRAIN_DIR.iterdir() if p.is_dir()))
-MODEL_ID = 'openai/clip-vit-base-patch16'
+from preprocess_images import EMOTIONS, DATA_DIR, TRAIN_DIR, TEST_DIR, preprocess_images
 
 parser = argparse.ArgumentParser(
-    description="Train, test and save a Random Forest model for the use of detecting a certain emotion in a human face"
+    description="Train, test and save an AI model for the use of detecting a certain emotion in a human face"
 )
-parser.add_argument('--estimators', '-e', type=int, default=1000, help='The amount of estimators in the Random Forest model')
+parser.add_argument('--save_model', '-s', help='Save the model', action=argparse.BooleanOptionalAction)
 parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size to feed encoder to produce vector embeddings')
+parser.add_argument('--hidden_layers', '-l', type=int, default=[100], help='Hidden layers for the model', nargs='+')
 ARGS = parser.parse_args()
+HIDDEN_LAYERS = tuple(ARGS.hidden_layers)
 
 def format_time(seconds):
     if seconds < 60:
@@ -46,12 +33,7 @@ def format_time(seconds):
         seconds %= 60
         return f"{hours} hours, {minutes} minutes, and {seconds} seconds"
 
-def get_data(
-        directory,
-        model=AutoModel.from_pretrained(MODEL_ID),
-        processor=AutoProcessor.from_pretrained(MODEL_ID)
-    ):
-
+def get_data(directory):
     preproc_filename = DATA_DIR / "preprocessed_data" / f'preprocessed_{directory.name}_data.npz'
     if preproc_filename.exists():
         print(f'Loading data from "{preproc_filename}"... ', end='')
@@ -59,36 +41,9 @@ def get_data(
         img_vecs = npz['img_vecs']
         targets = npz['targets']
         print('Done!')
+        return img_vecs, targets
     else:
-        imgs = np.stack([
-            np.array(Image.open(filename).convert("RGB")).transpose(2, 0, 1)
-            for emotion in tqdm(EMOTIONS, desc=f'Extracting {directory.name} data')
-            if (directory / emotion).exists()
-            for filename in sorted((directory / emotion).iterdir())
-            if filename.suffix == '.jpg'
-        ])
-        targets = np.array([
-            label
-            for label, emotion in enumerate(EMOTIONS)
-            if (directory / emotion).exists()
-            for filename in sorted((directory / emotion).iterdir())
-            if filename.suffix == '.jpg'
-        ])
-        dataset = DataLoader(
-            TensorDataset(torch.from_numpy(imgs)),
-            batch_size=ARGS.batch_size,
-        )
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = model.to(device)
-        with torch.inference_mode():
-            img_vecs = torch.cat([
-                model.get_image_features(**processor(images=img_batch, return_tensors='pt').to(device))
-                for (img_batch,) in tqdm(dataset, desc='Producing image vectors')
-            ])
-        img_vecs = np.array(img_vecs.cpu())
-        Path("faces/preprocessed_data").mkdir(parents=True, exist_ok=True)
-        np.savez_compressed(preproc_filename, img_vecs=img_vecs, targets=targets)
-    return img_vecs, targets
+        return preprocess_images(directory, ARGS.batch_size)
 
 def display_data(predictions, targets, labels, title, losses=False,):
     cm = confusion_matrix(targets, predictions)
@@ -101,10 +56,15 @@ def display_data(predictions, targets, labels, title, losses=False,):
 
 def train(inputs, targets):
     # Training the model
-    return RandomForestClassifier(
+    print(f'Training a Hidden Layers: {HIDDEN_LAYERS} model on {len(train_inputs)} image vectors...')
+    return MLPClassifier(
+        hidden_layer_sizes=HIDDEN_LAYERS,
+        alpha=0.0001,
+        batch_size='auto',
+        learning_rate_init=0.001,
+        max_iter=200,
         random_state=0,
-        verbose=2,
-        n_estimators=ARGS.estimators
+        verbose=True,
     ).fit(inputs, targets)
 
 def evaluate(classifier, inputs, targets, partition):
@@ -117,33 +77,42 @@ def evaluate(classifier, inputs, targets, partition):
     )
 
 def save_classifier(classifier):
+    # Saving the model
     MODELS_DIR = Path("models")
     if not MODELS_DIR.is_dir():
         MODELS_DIR.mkdir()
-    with open(MODELS_DIR / f"random_forest_{ARGS.estimators}.pickle", 'wb') as file:
-        pickle.dump(classifier, file)
+    model_iter = 0
+    while (model_filename := MODELS_DIR / f"emotion_ai_{model_iter}.pickle").exists():
+        model_iter += 1
+    with open(model_filename, 'wb') as model_file:
+        pickle.dump(classifier, model_file)
 
 if __name__ == '__main__':
 
     # Start timer
-    start = time.perf_counter()
+    start_time = time.perf_counter()
 
     # Train the model on training data
     train_inputs, train_targets = get_data(TRAIN_DIR)
-    test_inputs, test_targets = get_data(TEST_DIR)
     emotion_ai = train(train_inputs, train_targets)
 
     # Test the model on training data
     evaluate(emotion_ai, train_inputs, train_targets, 'Train')
 
     # Test the model on testing data
+    test_inputs, test_targets = get_data(TEST_DIR)
     evaluate(emotion_ai, test_inputs, test_targets, 'Test')
+
+    # Save the model
+    if ARGS.save_model:
+        save_classifier(emotion_ai)
+
+    stop_time = time.perf_counter()
 
     # Display the results of tests
     plt.show()
 
-    # Save the model
-    save_classifier(emotion_ai)
-
     # Stop timer and calculate elapsed time
-    print(f'Emotion model trained, tested and saved in {format_time(round(time.perf_counter() - start))}')
+    print(
+        f"Emotion model trained{', tested and saved' if ARGS.save_model == True else ' and tested'} in {format_time(round(stop_time - start_time))}"
+    )

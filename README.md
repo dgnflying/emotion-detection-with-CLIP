@@ -33,4 +33,4 @@ An AI that detects emotion in the face.
 
 
    
-5. Be sure to change the model file's name from `new_model` to something more memorable
+5. Feel free to change your model's file name from `emotion_ai_#` to something more memorable

@@ -14,7 +14,7 @@
 
   
 
-2. Unzip the file and add it to your workspace and rename the file as `faces`
+2. Unzip the file and add it to your workspace as `faces`
 
 
 

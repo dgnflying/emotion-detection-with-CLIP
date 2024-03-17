@@ -10,7 +10,7 @@
 # Instructions
 ## Getting Started
 
-1. Download the dataset at `https://www.kaggle.com/datasets/msambare/fer2013`
+1. Download the faces dataset at `https://www.kaggle.com/datasets/msambare/fer2013`
 
   
 

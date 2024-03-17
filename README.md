@@ -36,7 +36,8 @@
 
 5. Install project dependencies:
 
-	Using `pip`:
+	With **pip**:
+
 	```pip install scikit-learn```
 
 	```pip install Pillow```
@@ -45,7 +46,8 @@
 
 	```pip install matplotlib```
 
-	Using `conda`:
+	Or with **conda**:
+
  	```conda install scikit-learn```
 
 	```conda install pillow```

@@ -21,7 +21,7 @@ An AI that detects emotion in the face.
  	├── faces
 	│   ├── raw_data
 	│   │   ├── test
-    	|   │   │   ├── (images)
+ |   │   │   ├── (images)
 	│   │   ├── train
 	|   │   │   ├── (images)
 	│   ├── preprocessed_data

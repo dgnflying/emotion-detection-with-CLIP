@@ -1,11 +1,13 @@
 
-# emotion-detection-ai
+# emotion-detection
 
-An AI that detects emotion in the face.
+• Generates human facial emotion AI models
+• Plots image embeddings and text embeddings for easy data collection and comparison
 
   
 
 # Instructions
+## Getting Started
 
 1. Download the dataset at `https://www.kaggle.com/datasets/msambare/fer2013`
 
@@ -40,10 +42,9 @@ An AI that detects emotion in the face.
 
 	```pip install matplotlib```
 
-  
+## Creating a model
 
-6. Run emotion_detection.py
+1. Run emotion_detection.py
+2. Feel free to change your model's file name from `emotion_ai_#` to something more memorable
 
-
-   
-7. Feel free to change your model's file name from `emotion_ai_#` to something more memorable
+## Plotting embedding vectors

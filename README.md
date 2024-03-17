@@ -11,11 +11,24 @@ An AI that detects emotion in the face.
 
   
 
-2. Unzip the file, add it to your workspace, and rename the file to "faces"
+2. Unzip the file and add it to your workspace and rename the file as `faces`
 
+
+
+3. Reconfigure your file to this ***EXACT*** structure:
+   
+   	├── faces
+	│   ├── raw_data
+	│   │   ├── test
+        |   │   │   ├── *images*
+	│   │   ├── train
+	|   │   │   ├── *images*
+	│   ├── preprocessed_data
+	│   │   ├── *empty*
   
 
-3. Install project dependencies:
+
+5. Install project dependencies:
 
   
 
@@ -29,8 +42,8 @@ An AI that detects emotion in the face.
 
   
 
-4. Run emotion_detection.py
+6. Run emotion_detection.py
 
 
    
-5. Feel free to change your model's file name from `emotion_ai_#` to something more memorable
+7. Feel free to change your model's file name from `emotion_ai_#` to something more memorable

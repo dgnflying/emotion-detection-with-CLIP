@@ -1,7 +1,7 @@
 
 # emotion-detection
 
-•	Generates human facial emotion AI models
+•	Generates AI models that detect human facial emotion
 
 •	Plots image embeddings and text embeddings for easy data collection and comparison
 

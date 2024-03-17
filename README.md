@@ -45,7 +45,9 @@
 
 ## Creating a model
 
-1. Run emotion_detection.py
+1. Run `py emotion_detection.py` in the terminal
 2. Feel free to change your model's file name from `emotion_ai_#` to something more memorable
 
 ## Plotting embedding vectors
+
+1. Run `py plot_embeddings.py` in the terminal

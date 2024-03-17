@@ -28,7 +28,10 @@
 	│   │   ├── train
 	|   │   │   ├── (images)
 	│   ├── preprocessed_data
-	│   │   ├── (empty)
+	│   │   ├── image_embeddings
+	|   │   │   ├── (empty)
+	│   │   ├── text_embeddings
+	|   │   │   ├── (empty)
  ```
 
 5. Install project dependencies:

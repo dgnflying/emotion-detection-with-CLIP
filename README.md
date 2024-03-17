@@ -17,16 +17,17 @@ An AI that detects emotion in the face.
 
 3. Reconfigure your file to this ***EXACT*** structure:
    
-	```
+```
  	├── faces
 	│   ├── raw_data
 	│   │   ├── test
- |   │   │   ├── (images)
+ 	|   │   │   ├── (images)
 	│   │   ├── train
 	|   │   │   ├── (images)
 	│   ├── preprocessed_data
 	│   │   ├── (empty)
- 	```
+ 
+ ```
 
 5. Install project dependencies:
 

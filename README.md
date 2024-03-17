@@ -21,11 +21,11 @@ An AI that detects emotion in the face.
  	├── faces
 	│   ├── raw_data
 	│   │   ├── test
-        |   │   │   ├── *images*
+        |   │   │   ├── (images)
 	│   │   ├── train
-	|   │   │   ├── *images*
+	|   │   │   ├── (images)
 	│   ├── preprocessed_data
-	│   │   ├── *empty*
+	│   │   ├── (empty)
  	```
 
 5. Install project dependencies:

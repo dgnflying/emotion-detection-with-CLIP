@@ -18,7 +18,7 @@
 
 
 
-3. Reconfigure your file to this ***EXACT*** structure:
+3. Reconfigure your `faces` to this ***EXACT*** structure:
    
 ```
 	├── faces

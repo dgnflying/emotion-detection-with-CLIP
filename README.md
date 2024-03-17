@@ -26,7 +26,6 @@ An AI that detects emotion in the face.
 	|   │   │   ├── (images)
 	│   ├── preprocessed_data
 	│   │   ├── (empty)
- 
  ```
 
 5. Install project dependencies:

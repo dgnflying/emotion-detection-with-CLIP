@@ -61,11 +61,11 @@
 1. Run `py generate_model.py` in the terminal:
 
 	#### Arguments:
-	•	`-s` OR `--save_model`: Opt out of showing the average vector for each emotion
+	•	`-s` *OR* `--save_model`: Opt out of showing the average vector for each emotion
 	
-	•	`-A` OR `--no_all`: Opt out of showing all embeddings for every emotion
+	•	`-A` *OR* `--no_all`: Opt out of showing all embeddings for every emotion
 	
-	•	`-c` OR `--no_comparison`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart
+	•	`-c` *OR* `--no_comparison`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart
 
 
 2. Feel free to change your model's file name from `emotion_ai_#` to something more memorable
@@ -75,10 +75,10 @@
 1. Run `py plot_embeddings.py` in the terminal
 
 	#### Arguments:
-	•	`-a` OR `--no_average`: Opt out of showing the average vector for each emotion
+	•	`-a` *OR* `--no_average`: Opt out of showing the average vector for each emotion
 	
-	•	`-A` OR `--no_all`: Opt out of showing all embeddings for every emotion
+	•	`-A` *OR* `--no_all`: Opt out of showing all embeddings for every emotion
 	
-	•	`-c` OR `--no_comparison`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart
+	•	`-c` *OR* `--no_comparison`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart
 
-	•	`-b` OR `--batch_size`: Batch size to feed encoder to produce vector embeddings **(default: int 32)**
+	•	`-b` *OR* `--batch_size`: Batch size to feed encoder to produce vector embeddings ***(default: 32)***

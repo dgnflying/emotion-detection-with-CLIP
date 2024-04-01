@@ -72,7 +72,7 @@
 	Opt out of showing comparisons between each emotion's average image vector and their text counterpart ***(default: 200)***
 
 
-3. Once finished, if you saved your model by omitting `--no_save` as an argument, feel free to change your model's file name in `root/models` from `emotion_ai_#` to something more memorable
+3. Once finished, if you saved your model by omitting `--no_save` as an argument, feel free to change your model's file name in `/output/models` from `emotion_ai_#` to something more memorable
 
 ## Plotting embedding vectors
 

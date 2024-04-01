@@ -67,6 +67,7 @@
 	
 	•	`-c` OR `--no_comparison`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart
 
+
 2. Feel free to change your model's file name from `emotion_ai_#` to something more memorable
 
 ## Plotting embedding vectors
@@ -79,3 +80,4 @@
 	•	`-A` OR `--no_all`: Opt out of showing all embeddings for every emotion
 	
 	•	`-c` OR `--no_comparison`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart
+

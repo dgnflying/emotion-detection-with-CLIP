@@ -36,25 +36,25 @@
 
 5. Install project dependencies:
 
-With **pip**:
-
-```pip install scikit-learn```
-
-```pip install Pillow```
-
-```pip install tqdm```
-
-```pip install matplotlib```
-
-Or with **conda**:
-
-```conda install scikit-learn```
-
-```conda install pillow```
-
-```conda install tqdm```
-
-```conda install matplotlib```
+	With **pip**:
+	
+	```pip install scikit-learn```
+	
+	```pip install Pillow```
+	
+	```pip install tqdm```
+	
+	```pip install matplotlib```
+	
+	Or with **conda**:
+	
+	```conda install scikit-learn```
+	
+	```conda install pillow```
+	
+	```conda install tqdm```
+	
+	```conda install matplotlib```
 
 ## Creating a model
 

@@ -63,7 +63,7 @@
 	#### Arguments:
 	•	`-s` **OR** `--no_save`: Opt in to saving the model
 	
-	•	`-h` **OR** `--hidden_layers`: The hidden layers of the model ***(default: 100)***
+	•	`-h` **OR** `--hidden_layers`: The hidden layers of the model ***(default: 100)***\
 		##### Example:
 		`py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
 	

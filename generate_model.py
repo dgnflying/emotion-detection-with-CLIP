@@ -113,5 +113,5 @@ if __name__ == '__main__':
 
     # Stop timer and calculate elapsed time
     print(
-        f"Emotion model trained{', tested and saved' if ARGS.save_model == True else ' and tested'} in {format_time(round(stop_time - start_time))}"
+        f"Emotion model trained{', tested and saved' if not ARGS.no_save else ' and tested'} in {format_time(round(stop_time - start_time))}"
     )

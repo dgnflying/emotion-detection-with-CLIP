@@ -4,48 +4,90 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.manifold import TSNE
 
-from preprocess_images import DATA_DIR, TRAIN_DIR, TEST_DIR, EMOTIONS, preprocess_images
+from create_embeddings import PREPROC_TEXT_DIR, PREPROC_IMGS_DIR, RAW_TRAIN_DIR, EMOTIONS, create_text_embeddings, create_image_embeddings
 
 parser = argparse.ArgumentParser(
     description="Plot the embeddings of the images in the dataset to visualize the distribution of the data."
 )
 parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size to feed encoder to produce vector embeddings')
+parser.add_argument('--no_average', '-a', help='Opt out of showing the average vector for each emotion', action=argparse.BooleanOptionalAction)
+parser.add_argument('--no_all', '-A', help='Opt out of showing all embeddings for every emotion', action=argparse.BooleanOptionalAction)
+parser.add_argument(
+    '--no_comparison',
+    '-c',
+    help="Opt out of showing comparisons between each emotion's average image vector and their text counterpart",
+    action=argparse.BooleanOptionalAction
+)
 ARGS = parser.parse_args()
 
 FIG_SIZE = (10, 8)
 
-def get_embeddings(directory):
-    preproc_filename = DATA_DIR / "preprocessed_data" / f'preprocessed_{directory.name}_data.npz'
+def get_embeddings(type, directory):
+    if type == 'IMGS':
+        preproc_filename = PREPROC_IMGS_DIR / f'{directory.name}.npz'
+    elif type == 'TEXT':
+        preproc_filename = PREPROC_TEXT_DIR / f'{directory.name}.npz'
     if preproc_filename.exists():
         print(f'Loading data from "{preproc_filename}"... ', end='')
         npz = np.load(preproc_filename)
-        img_vecs = npz['img_vecs']
+        vecs = npz['vecs']
         targets = npz['targets']
         print('Done!')
-        return img_vecs, targets
+        return vecs, targets
     else:
-        return preprocess_images(directory, ARGS.batch_size)
+        if type == 'IMGS':
+            return create_image_embeddings(directory, ARGS.batch_size)
+        elif type == 'TEXT':
+            return create_text_embeddings(directory)
 
 if __name__ == '__main__':
     # Reduce embeddings to 2 dimensions
-    train_img_vecs, train_targets = get_embeddings(TRAIN_DIR)
-    test_img_vecs, test_targets = get_embeddings(TEST_DIR)
-    train_2d = TSNE(random_state=0, verbose=1).fit_transform(train_img_vecs)
-    test_2d = TSNE(random_state=0, verbose=1).fit_transform(test_img_vecs)
+    img_vecs, img_targets = get_embeddings('IMGS', RAW_TRAIN_DIR)
+    img_data = TSNE(random_state=0, verbose=1).fit_transform(img_vecs)
 
-    # Plot the embeddings
-    plt.figure(figsize=FIG_SIZE)
-    for i, emotion in enumerate(EMOTIONS):
-        indices = train_targets == i
-        plt.scatter(train_2d[indices, 0], train_2d[indices, 1], label=emotion)
-    plt.title('t-SNE Visualization of "Train" Image Embeddings')
-    plt.legend()
+    # Plot all embeddings for every emotion
+    if not ARGS.no_all:
+        plt.figure(figsize=FIG_SIZE)
+        plt.suptitle('Scatter Plot of Emotions')
+        for i, emotion in enumerate(EMOTIONS):
+            indices = img_targets == i
+            plt.scatter(img_data[indices, 0], img_data[indices, 1], label=emotion)
+            plt.title('t-SNE Visualization of the "Train" Image Embeddings')
+            plt.legend()
 
-    plt.figure(figsize=FIG_SIZE)
-    for i, emotion in enumerate(EMOTIONS):
-        indices = test_targets == i
-        plt.scatter(test_2d[indices, 0], test_2d[indices, 1], label=emotion)
-    plt.title('t-SNE Visualization of "Test" Image Embeddings')
-    plt.legend()
+    # Plot average vector for each emotion
+    if not ARGS.no_average:
+        plt.figure(figsize=FIG_SIZE)
+        plt.suptitle('Average Vector of Emotions')
+        for i, emotion in enumerate(EMOTIONS):
+            indices = img_targets == i
+            avg_vec = np.mean(img_data[indices], axis=0)
+            plt.scatter(avg_vec[0], avg_vec[1], label=emotion)
+            plt.plot([0, avg_vec[0]], [0, avg_vec[1]])
+        plt.title('t-SNE Visualization of the average "Train" Image Embeddings')
+        plt.axhline(0, color='black')
+        plt.axvline(0, color='black')
+        plt.legend()
+
+    # Plot comparisons between each emotion's average image vector and their text counterpart
+    if not ARGS.no_comparison:
+
+        text_vecs, text_targets = get_embeddings('TEXT', PREPROC_TEXT_DIR)
+        text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)
+
+        for i, emotion in enumerate(EMOTIONS):
+            plt.figure(figsize=FIG_SIZE)
+            text_indices = text_targets == i
+            avg_img_vec = np.mean(img_data[img_targets == i], axis=0)
+            plt.scatter(text_data[text_indices, 0], text_data[text_indices, 1], label=f'{emotion.capitalize()} (Text)')
+            plt.plot([0, text_data[text_indices, 0][0]], [0, text_data[text_indices, 1][0]])
+            plt.scatter(avg_img_vec[0], avg_img_vec[1], label=f'{emotion.capitalize()} (Image)')
+            plt.plot([0, avg_img_vec[0]], [0, avg_img_vec[1]])
+            plt.title(
+                f'{emotion.upper()}: t-SNE Visualization of the average of the "Train" Image Embeddings compared with their Text Counterparts'
+            )
+            plt.axhline(0, color='black')
+            plt.axvline(0, color='black')
+            plt.legend()
 
     plt.show()

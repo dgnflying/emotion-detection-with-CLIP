@@ -8,14 +8,14 @@ import numpy as np
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 
-from preprocess_images import EMOTIONS, DATA_DIR, TRAIN_DIR, TEST_DIR, preprocess_images
+from create_embeddings import EMOTIONS, PREPROC_IMGS_DIR, RAW_TRAIN_DIR, RAW_TEST_DIR, create_image_embeddings
 
 parser = argparse.ArgumentParser(
     description="Train, test and save an AI model for the use of detecting a certain emotion in a human face"
 )
-parser.add_argument('--save_model', '-s', help='Save the model', action=argparse.BooleanOptionalAction)
-parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size to feed encoder to produce vector embeddings')
-parser.add_argument('--hidden_layers', '-l', type=int, default=[100], help='Hidden layers for the model', nargs='+')
+parser.add_argument('--no_save', '-s', help='Opt out of saving the model', action=argparse.BooleanOptionalAction)
+parser.add_argument('--hidden_layers', '-l', type=int, default=[100], help='The hidden layers of the model', nargs='+')
+parser.add_argument('--batch_size', '-b', type=int, default=200, help='The batch size for training the model')
 ARGS = parser.parse_args()
 HIDDEN_LAYERS = tuple(ARGS.hidden_layers)
 
@@ -34,7 +34,7 @@ def format_time(seconds):
         return f"{hours} hours, {minutes} minutes, and {seconds} seconds"
 
 def get_data(directory):
-    preproc_filename = DATA_DIR / "preprocessed_data" / f'preprocessed_{directory.name}_data.npz'
+    preproc_filename = PREPROC_IMGS_DIR / f'{directory.name}.npz'
     if preproc_filename.exists():
         print(f'Loading data from "{preproc_filename}"... ', end='')
         npz = np.load(preproc_filename)
@@ -43,7 +43,7 @@ def get_data(directory):
         print('Done!')
         return img_vecs, targets
     else:
-        return preprocess_images(directory, ARGS.batch_size)
+        return create_image_embeddings(directory, 32)
 
 def display_data(predictions, targets, labels, title, losses=False,):
     cm = confusion_matrix(targets, predictions)
@@ -59,8 +59,7 @@ def train(inputs, targets):
     print(f'Training a Hidden Layers: {HIDDEN_LAYERS} model on {len(train_inputs)} image vectors...')
     return MLPClassifier(
         hidden_layer_sizes=HIDDEN_LAYERS,
-        alpha=0.0001,
-        batch_size='auto',
+        batch_size=ARGS.batch_size,
         learning_rate_init=0.001,
         max_iter=200,
         random_state=0,
@@ -93,18 +92,18 @@ if __name__ == '__main__':
     start_time = time.perf_counter()
 
     # Train the model on training data
-    train_inputs, train_targets = get_data(TRAIN_DIR)
+    train_inputs, train_targets = get_data(RAW_TRAIN_DIR)
     emotion_ai = train(train_inputs, train_targets)
 
     # Test the model on training data
     evaluate(emotion_ai, train_inputs, train_targets, 'Train')
 
     # Test the model on testing data
-    test_inputs, test_targets = get_data(TEST_DIR)
+    test_inputs, test_targets = get_data(RAW_TEST_DIR)
     evaluate(emotion_ai, test_inputs, test_targets, 'Test')
 
     # Save the model
-    if ARGS.save_model:
+    if not ARGS.no_save:
         save_classifier(emotion_ai)
 
     stop_time = time.perf_counter()

@@ -61,12 +61,15 @@
 1. Run `py generate_model.py` in the terminal:
 
 	#### Arguments:
-	•	`-s` **OR** `--no_save`: Opt in to saving the model
+	##### `-s` **OR** `--no_save`:
+	Opt in to saving the model
 	
-	•	`-h` **OR** `--hidden_layers`: The hidden layers of the model ***(default: 100)***
-		Example: `py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
+	##### `-h` **OR** `--hidden_layers`:
+	The hidden layers of the model ***(default: 100)***
+	Example: `py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
 	
-	•	`-b` **OR** `--batch_size`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart ***(default: 200)***
+	##### `-b` **OR** `--batch_size`:
+	Opt out of showing comparisons between each emotion's average image vector and their text counterpart ***(default: 200)***
 
 
 3. Once finished, if you saved your model by omitting `--no_save` as an argument, feel free to change your model's file name in `root/models` from `emotion_ai_#` to something more memorable
@@ -76,10 +79,14 @@
 1. Run `py plot_embeddings.py` in the terminal
 
 	#### Arguments:
-	•	`-a` **OR** `--no_average`: Opt out of showing the average vector for each emotion
+	##### `-a` **OR** `--no_average`:
+	Opt out of showing the average vector for each emotion
 	
-	•	`-A` **OR** `--no_all`: Opt out of showing all embeddings for every emotion
+	##### `-A` **OR** `--no_all`:
+	Opt out of showing all embeddings for every emotion
 	
-	•	`-c` **OR** `--no_comparison`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart
+	##### `-c` **OR** `--no_comparison`:
+ 	Opt out of showing comparisons between each emotion's average image vector and their text counterpart
 
-	•	`-b` **OR** `--batch_size`: Batch size to feed encoder to produce vector embeddings ***(default: 32)***
+	##### `-b` **OR** `--batch_size`:
+ 	Batch size to feed encoder to produce vector embeddings ***(default: 32)***

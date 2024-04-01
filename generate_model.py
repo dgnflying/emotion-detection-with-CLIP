@@ -77,14 +77,23 @@ def evaluate(classifier, inputs, targets, partition):
 
 def save_classifier(classifier):
     # Saving the model
-    MODELS_DIR = Path("models")
+    MODELS_DIR = Path("output/models")
     if not MODELS_DIR.is_dir():
-        MODELS_DIR.mkdir()
+        MODELS_DIR.mkdir(parents=True)
     model_iter = 0
     while (model_filename := MODELS_DIR / f"emotion_ai_{model_iter}.pickle").exists():
         model_iter += 1
     with open(model_filename, 'wb') as model_file:
         pickle.dump(classifier, model_file)
+    print(f'Model saved to "{model_filename}"')
+
+    # Save the loss curve
+    DATA_DIR = Path("output/data")
+    if not DATA_DIR.is_dir():
+        DATA_DIR.mkdir(parents=True)
+    losses_filename = DATA_DIR / f"emotion_ai_{model_iter}_loss_curve.npz"
+    np.savez_compressed(losses_filename, np.array(classifier.loss_curve_))
+    print(f'Loss curve saved to "{losses_filename}"')
 
 if __name__ == '__main__':
 

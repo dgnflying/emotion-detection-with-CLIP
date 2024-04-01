@@ -77,28 +77,27 @@ def evaluate(classifier, inputs, targets, partition):
 
 def save_classifier(classifier):
     # Saving the model
-    MODELS_DIR = Path("output/models")
-    if not MODELS_DIR.is_dir():
-        MODELS_DIR.mkdir(parents=True)
+    OUTPUT_DIR = Path("output")
+    if not OUTPUT_DIR.is_dir():
+        OUTPUT_DIR.mkdir()
     model_iter = 0
-    while (model_filename := MODELS_DIR / f"emotion_ai_{model_iter}.pickle").exists():
+    date_str = time.strftime('%Y-%m-%d')
+    while (MODEL_DIR := OUTPUT_DIR / f"{date_str}-{model_iter}").exists():
         model_iter += 1
+    MODEL_DIR.mkdir()
+    model_filename = MODEL_DIR / "emotion_ai_model.pickle"
     with open(model_filename, 'wb') as model_file:
         pickle.dump(classifier, model_file)
     print(f'Model saved to "{model_filename}"')
 
     # Save the loss curve
-    DATA_DIR = Path("output/data")
-    if not DATA_DIR.is_dir():
-        DATA_DIR.mkdir(parents=True)
-    losses_filename = DATA_DIR / f"emotion_ai_{model_iter}_loss_curve.npz"
-    np.savez_compressed(losses_filename, np.array(classifier.loss_curve_))
+    losses_filename = MODEL_DIR / "model_loss_curve.npz"
+    np.savez_compressed(losses_filename, loss_curve=np.array(classifier.loss_curve_))
     print(f'Loss curve saved to "{losses_filename}"')
 
-if __name__ == '__main__':
 
-    # Start timer
-    start_time = time.perf_counter()
+
+if __name__ == '__main__':
 
     # Train the model on training data
     train_inputs, train_targets = get_data(RAW_TRAIN_DIR)
@@ -115,12 +114,5 @@ if __name__ == '__main__':
     if not ARGS.no_save:
         save_classifier(emotion_ai)
 
-    stop_time = time.perf_counter()
-
     # Display the results of tests
     plt.show()
-
-    # Stop timer and calculate elapsed time
-    print(
-        f"Emotion model trained{', tested and saved' if not ARGS.no_save else ' and tested'} in {format_time(round(stop_time - start_time))}"
-    )

@@ -65,7 +65,7 @@
 	
 	•	`-h` **OR** `--hidden_layers`: The hidden layers of the model ***(default: 100)***
 
-		•	Enter this as multiple int values for a multi-layer model (ex. `py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
+		Enter this as multiple int values for a multi-layer model (ex. `py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`)
 	
 	•	`-b` **OR** `--batch_size`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart ***(default: 200)***
 

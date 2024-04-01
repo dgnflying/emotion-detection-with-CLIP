@@ -38,10 +38,10 @@ def get_data(directory):
     if preproc_filename.exists():
         print(f'Loading data from "{preproc_filename}"... ', end='')
         npz = np.load(preproc_filename)
-        img_vecs = npz['img_vecs']
+        vecs = npz['vecs']
         targets = npz['targets']
         print('Done!')
-        return img_vecs, targets
+        return vecs, targets
     else:
         return create_image_embeddings(directory, 32)
 

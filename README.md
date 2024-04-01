@@ -60,7 +60,7 @@
 
 1. Run `py emotion_detection.py` in the terminal:
 
-Arguments:
+#### Arguments:
 •	`-a` OR `--no_average`: Opt out of showing the average vector for each emotion
 
 •	`-A` OR `--no_all`: Opt out of showing all embeddings for every emotion
@@ -73,7 +73,7 @@ Arguments:
 
 1. Run `py plot_embeddings.py` in the terminal
 
-Arguments:
+#### Arguments:
 •	`-a` OR `--no_average`: Opt out of showing the average vector for each emotion
 
 •	`-A` OR `--no_all`: Opt out of showing all embeddings for every emotion

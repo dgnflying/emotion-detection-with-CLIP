@@ -65,7 +65,7 @@
 	Opt out of saving the model
 	
 	#### `--hidden_layers` **OR** `-h`:
-	The hidden layers of the model ***(default: 100)***
+	The hidden layers of the model ***(default: 100)***\
 	**Example:** `py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
 	
 	#### `--batch_size` **OR** `-b`:

@@ -64,15 +64,15 @@
 	#### `--no_save` **OR** `-s`:
 	Opt out of saving the model
 	
-	#### `--hidden_layers` **OR** `-h`:
+	#### `--hidden_layers` **OR** `-l`:
 	The hidden layers of the model ***(default: 100)***\
-	**Example:** `py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
+	**Example:** `py generate_model.py -l 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
 	
 	#### `--batch_size` **OR** `-b`:
 	Opt out of showing comparisons between each emotion's average image vector and their text counterpart ***(default: 200)***
 
 
-3. Once finished, if you saved your model by omitting `--no_save` as an argument, feel free to change your model's file name in `root/models` from `emotion_ai_#` to something more memorable
+3. Once finished, if you saved your model by omitting `--no_save` as an argument, feel free to change your model's file name in `/output/models` from `emotion_ai_#` to something more memorable
 
 ## Plotting embedding vectors
 

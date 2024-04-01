@@ -60,7 +60,7 @@
 
 1. Run `py generate_model.py` in the terminal:
 
-	#### Arguments:
+	### Arguments:
 	##### `--no_save` **OR** `-s`:
 	Opt in to saving the model
 	
@@ -78,7 +78,7 @@
 
 1. Run `py plot_embeddings.py` in the terminal
 
-	#### Arguments:
+	### Arguments:
 	##### `--no_average` **OR** `-a`:
 	Opt out of showing the average vector for each emotion
 	

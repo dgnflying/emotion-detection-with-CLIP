@@ -61,14 +61,14 @@
 1. Run `py generate_model.py` in the terminal:
 
 	### Arguments:
-	##### `--no_save` **OR** `-s`:
+	#### `--no_save` **OR** `-s`:
 	Opt in to saving the model
 	
-	##### `--hidden_layers` **OR** `-h`:
+	#### `--hidden_layers` **OR** `-h`:
 	The hidden layers of the model ***(default: 100)***
 	Example: `py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
 	
-	##### `--batch_size` **OR** `-b`:
+	#### `--batch_size` **OR** `-b`:
 	Opt out of showing comparisons between each emotion's average image vector and their text counterpart ***(default: 200)***
 
 
@@ -79,14 +79,14 @@
 1. Run `py plot_embeddings.py` in the terminal
 
 	### Arguments:
-	##### `--no_average` **OR** `-a`:
+	#### `--no_average` **OR** `-a`:
 	Opt out of showing the average vector for each emotion
 	
-	##### `--no_all` **OR**  `-A`:
+	#### `--no_all` **OR**  `-A`:
 	Opt out of showing all embeddings for every emotion
 	
-	##### `--no_comparison` **OR** `-c`:
+	#### `--no_comparison` **OR** `-c`:
  	Opt out of showing comparisons between each emotion's average image vector and their text counterpart
 
-	##### `--batch_size` **OR** `-b`:
+	#### `--batch_size` **OR** `-b`:
  	Batch size to feed encoder to produce vector embeddings ***(default: 32)***

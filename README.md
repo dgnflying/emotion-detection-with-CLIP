@@ -63,9 +63,8 @@
 	#### Arguments:
 	•	`-s` **OR** `--no_save`: Opt in to saving the model
 	
-	•	`-h` **OR** `--hidden_layers`: The hidden layers of the model ***(default: 100)***\
-		##### Example:
-		`py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
+	•	`-h` **OR** `--hidden_layers`: The hidden layers of the model ***(default: 100)***
+		Example: `py generate_model.py -h 1000 100` generates a model architecture of `input -> 1000 nodes -> 100 nodes -> output`
 	
 	•	`-b` **OR** `--batch_size`: Opt out of showing comparisons between each emotion's average image vector and their text counterpart ***(default: 200)***
 

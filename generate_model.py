@@ -1,6 +1,7 @@
-import time
-import pickle
 import argparse
+import json
+import pickle
+import time
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -56,7 +57,9 @@ def display_data(predictions, targets, labels, title, losses=False,):
 
 def train(inputs, targets):
     # Training the model
-    print(f'Training a Hidden Layers: {HIDDEN_LAYERS} model on {len(train_inputs)} image vectors...')
+    print(
+        f'Training a "Hidden Layers = {HIDDEN_LAYERS}" and "Batch Size = {ARGS.batch_size}" model on {len(train_inputs)} image vectors...'
+    )
     return MLPClassifier(
         hidden_layer_sizes=HIDDEN_LAYERS,
         batch_size=ARGS.batch_size,
@@ -70,13 +73,15 @@ def evaluate(classifier, inputs, targets, partition):
     # Testing the model
     results = classifier.predict(inputs)
     display_data(predictions=results, targets=targets, labels=EMOTIONS, title=f"{partition.upper()} Data")
+    accuracy = f'{(results == targets).mean() * 100:.3f}%'
     print(
-        f'Accuracy on {partition.lower()}ing data: '
-        f'{(results == targets).mean() * 100:.3f}%'
+        f'Accuracy on {partition.lower()}ing data: {accuracy}'
     )
+    return accuracy
 
-def save_classifier(classifier):
-    # Saving the model
+def save_classifier(classifier, train_results, test_results):
+
+    # Create a model folder
     OUTPUT_DIR = Path("output")
     if not OUTPUT_DIR.is_dir():
         OUTPUT_DIR.mkdir()
@@ -85,15 +90,28 @@ def save_classifier(classifier):
     while (MODEL_DIR := OUTPUT_DIR / f"{date_str}-{model_iter}").exists():
         model_iter += 1
     MODEL_DIR.mkdir()
+
+    # Save the model
     model_filename = MODEL_DIR / "emotion_ai_model.pickle"
     with open(model_filename, 'wb') as model_file:
         pickle.dump(classifier, model_file)
     print(f'Model saved to "{model_filename}"')
 
     # Save the loss curve
-    losses_filename = MODEL_DIR / "model_loss_curve.npz"
+    losses_filename = MODEL_DIR / "loss_curve.npz"
     np.savez_compressed(losses_filename, loss_curve=np.array(classifier.loss_curve_))
     print(f'Loss curve saved to "{losses_filename}"')
+
+    # Save the model's hyperparameters and accuracy results
+    results_filename = MODEL_DIR / "data.json"
+    results = {
+        'hyperparameters': classifier.get_params(),
+        'training-results': train_results,
+        'testing-results': test_results,
+    }
+    with open(results_filename, 'w') as results_file:
+        json.dump(results, results_file)
+    print(f'Results saved to "{results_filename}"')
 
 
 
@@ -104,15 +122,15 @@ if __name__ == '__main__':
     emotion_ai = train(train_inputs, train_targets)
 
     # Test the model on training data
-    evaluate(emotion_ai, train_inputs, train_targets, 'Train')
+    train_accuracy = evaluate(emotion_ai, train_inputs, train_targets, 'Train')
 
     # Test the model on testing data
     test_inputs, test_targets = get_data(RAW_TEST_DIR)
-    evaluate(emotion_ai, test_inputs, test_targets, 'Test')
+    test_accuracy = (emotion_ai, test_inputs, test_targets, 'Test')
 
     # Save the model
     if not ARGS.no_save:
-        save_classifier(emotion_ai)
+        save_classifier(emotion_ai, train_results=train_accuracy, test_results=test_accuracy)
 
     # Display the results of tests
     plt.show()

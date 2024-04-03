@@ -76,7 +76,7 @@
 
 2. Once finished, if you saved your model by omitting `--no_save` as an argument, feel free to change your model's folder name at `/output/*current_date*-*iteration_number*` to something more memorable
    
-   ***WARNING: If the original file name is changed from*** `*current_date*-*iteration_number*`, ***the*** `--use_current_date` (`-d`) ***argument within `replot_data.py` will be unusable***
+   ***WARNING: If the original file name is changed from*** `*current_date*-*iteration_number*`, ***the*** `--use_current_date` ***(***`-d`***)*** ***argument within `replot_data.py` will be unusable***
 
 ## Replotting past model data
 

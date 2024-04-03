@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument('--no_save', '-s', help='Opt out of saving the model', action=argparse.BooleanOptionalAction)
 parser.add_argument('--hidden_layers', '-l', type=int, default=[100], help='The hidden layers of the model', nargs='+')
+parser.add_argument('--learning_rate', '-r', type=float, default=0.0001, help='The hidden layers of the model', nargs='+')
 parser.add_argument('--batch_size', '-b', type=int, default=200, help='The batch size for training the model')
 ARGS = parser.parse_args()
 HIDDEN_LAYERS = tuple(ARGS.hidden_layers)
@@ -46,24 +47,29 @@ def get_data(directory):
     else:
         return create_image_embeddings(directory, 32)
 
-def display_data(predictions, targets, labels, title, losses=False,):
-    cm = confusion_matrix(targets, predictions)
-    cm_display = ConfusionMatrixDisplay(cm, display_labels=labels)
+def graph_data(cm, title, losses):
+
+    # Graph the confusion matrix
+    cm_display = ConfusionMatrixDisplay(cm, display_labels=EMOTIONS)
     _, ax = plt.subplots()
     cm_display.plot(ax=ax)
     ax.set_title(title)
-    if losses:
-        plt.plot(np.arange(len(losses)), losses)
+
+    # Graph the loss curve
+    plt.plot(losses)
+    plt.title('Loss Curve')
+    plt.xlabel('Iteration')
+    plt.ylabel('Loss')
 
 def train(inputs, targets):
     # Training the model
     print(
-        f'Training a "Hidden Layers = {HIDDEN_LAYERS}" and "Batch Size = {ARGS.batch_size}" model on {len(train_inputs)} image vectors...'
+        f'Training a "Batch Size = {ARGS.batch_size}", "Hidden Layers = {HIDDEN_LAYERS}" and "Learning Rate = {ARGS.learning_rate}" model on {len(train_inputs)} image vectors...'
     )
     return MLPClassifier(
         hidden_layer_sizes=HIDDEN_LAYERS,
         batch_size=ARGS.batch_size,
-        learning_rate_init=0.001,
+        learning_rate_init=ARGS.learning_rate,
         max_iter=200,
         random_state=0,
         verbose=True,
@@ -72,14 +78,15 @@ def train(inputs, targets):
 def evaluate(classifier, inputs, targets, partition):
     # Testing the model
     results = classifier.predict(inputs)
-    display_data(predictions=results, targets=targets, labels=EMOTIONS, title=f"{partition.upper()} Data")
+    cm = confusion_matrix(targets, results)
+    graph_data(confusion_matrix=cm, title=f"{partition.upper()} Data", losses=classifier.loss_curve_)
     accuracy = f'{(results == targets).mean() * 100:.3f}%'
     print(
         f'Accuracy on {partition.lower()}ing data: {accuracy}'
     )
-    return accuracy
+    return cm, accuracy
 
-def save_classifier(classifier, train_results, test_results):
+def save_data(classifier, train_cm, test_cm, train_results, test_results):
 
     # Create a model folder
     OUTPUT_DIR = Path("output")
@@ -87,7 +94,7 @@ def save_classifier(classifier, train_results, test_results):
         OUTPUT_DIR.mkdir()
     model_iter = 0
     date_str = time.strftime('%Y-%m-%d')
-    while (MODEL_DIR := OUTPUT_DIR / f"{date_str}-{model_iter}").exists():
+    while (MODEL_DIR := OUTPUT_DIR / f"{date_str}-{model_iter}").is_dir():
         model_iter += 1
     MODEL_DIR.mkdir()
 
@@ -113,6 +120,12 @@ def save_classifier(classifier, train_results, test_results):
         json.dump(results, results_file)
     print(f'Results saved to "{results_filename}"')
 
+    # Save the confusion matrix data
+    cm_folder = MODEL_DIR / "confusion_matrices.npz"
+    np.savez_compressed(cm_folder, train_cm=train_cm, test_cm=test_cm)
+    print(f'Confusion matrices saved to "{cm_folder}"')
+
+
 
 
 if __name__ == '__main__':
@@ -122,17 +135,21 @@ if __name__ == '__main__':
     emotion_ai = train(train_inputs, train_targets)
 
     # Test the model on training data
-    train_accuracy = evaluate(emotion_ai, train_inputs, train_targets, 'Train')
+    train_cm, train_accuracy = evaluate(emotion_ai, train_inputs, train_targets, 'Train')
 
     # Test the model on testing data
     test_inputs, test_targets = get_data(RAW_TEST_DIR)
-    test_accuracy = evaluate(emotion_ai, test_inputs, test_targets, 'Test')
-
-    print(train_accuracy, test_accuracy)
+    test_cm, test_accuracy = evaluate(emotion_ai, test_inputs, test_targets, 'Test')
 
     # Save the model
     if not ARGS.no_save:
-        save_classifier(emotion_ai, train_results=train_accuracy, test_results=test_accuracy)
+        save_data(
+            emotion_ai,
+            train_cm=train_cm,
+            test_cm=test_cm,
+            train_results=train_accuracy,
+            test_results=test_accuracy
+        )
 
-    # Display the results of tests
+    # Display the result graphs
     plt.show()

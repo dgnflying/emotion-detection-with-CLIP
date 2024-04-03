@@ -14,13 +14,13 @@ PREPROC_IMGS_DIR = DATA_DIR / 'preprocessed_data' / 'image_embeddings'
 PREPROC_TEXT_DIR = DATA_DIR / 'preprocessed_data' / 'text_embeddings'
 RAW_TRAIN_DIR = DATA_DIR / 'raw_data' / 'train'
 RAW_TEST_DIR = DATA_DIR / 'raw_data' / 'test'
-if not DATA_DIR.exists():
+if not DATA_DIR.is_dir():
   raise ValueError(f'Path {str(DATA_DIR)} does not exist')
-if not PREPROC_IMGS_DIR.exists():
+if not PREPROC_IMGS_DIR.is_dir():
   PREPROC_IMGS_DIR.mkdir(parents=True)
-if not RAW_TRAIN_DIR.exists():
+if not RAW_TRAIN_DIR.is_dir():
   raise ValueError(f'Path {str(RAW_TRAIN_DIR)} does not exist')
-if not RAW_TEST_DIR.exists():
+if not RAW_TEST_DIR.is_dir():
   raise ValueError(f'Path {str(RAW_TEST_DIR)} does not exist')
 if not (set(p.name for p in RAW_TEST_DIR.iterdir() if p.is_dir()) <= set(p.name for p in RAW_TRAIN_DIR.iterdir() if p.is_dir())):
   raise ValueError('There are `test` labels that do not exist in `train`')
@@ -48,14 +48,14 @@ def create_image_embeddings(
     imgs = np.stack([
       np.array(Image.open(filename).convert("RGB")).transpose(2, 0, 1)
       for emotion in tqdm(EMOTIONS, desc=f'Extracting {directory.name}ing data')
-      if (directory / emotion).exists()
+      if (directory / emotion).is_dir()
       for filename in sorted((directory / emotion).iterdir())
       if filename.suffix == '.jpg'
     ])
     targets = np.array([
       label
       for label, emotion in enumerate(EMOTIONS)
-      if (directory / emotion).exists()
+      if (directory / emotion).is_dir()
       for filename in sorted((directory / emotion).iterdir())
       if filename.suffix == '.jpg'
     ])

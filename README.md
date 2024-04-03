@@ -76,20 +76,20 @@
 
 2. Once finished, if you saved your model by omitting `--no_save` as an argument, feel free to change your model's folder name at `/output/*current_date*-*iteration_number*` to something more memorable
    
-   ***WARNING: If the original file name is changed from*** `*current_date*-*iteration_number*`, ***the*** `--use_current_date` ***(***`-d`***)*** ***argument within*** `replot_data.py` ***will be unusable***
+   ***WARNING: If the original file name is changed from*** `*current_date*-*iteration_number*`, ***the*** `--use_current_date` ***(***`-d`***)*** ***argument within*** `plot_data.py` ***will be unusable***
 
 ## Replotting past model data
 
-1. Run `py replot_data.py` in the terminal
+1. Run `py plot_data.py` in the terminal
 
 	### Arguments:
 	#### `--file` **OR** `-f`:
  	The file containing the model data\
-	**Example:** `py replot_data.py -f 2099-04-01-0` will replot the data of the user's first generated model from April 1st, 2099 (if the file was not renamed)
+	**Example:** `py plot_data.py -f 2099-04-01-0` will replot the data of the user's first generated model from April 1st, 2099 (if the file was not renamed)
 
 	#### `--use_current_date` **OR** `-d`:
 	Use the current data as the first three values in file specification ***(NOT TO BE USED WHEN THE TARGET FILE HAS BEEN RENAMED)***\
-	**Example:** `py replot_data.py -d -f 0` will replot the data of the user's first generated model from the day this was ran (if the file was not renamed)
+	**Example:** `py plot_data.py -d -f 0` will replot the data of the user's first generated model from the day this was ran (if the file was not renamed)
 	
 	#### `--no_cm` **OR**  `-c`:
 	Opt out of displaying the model's confusion matrices

@@ -126,7 +126,9 @@ if __name__ == '__main__':
 
     # Test the model on testing data
     test_inputs, test_targets = get_data(RAW_TEST_DIR)
-    test_accuracy = (emotion_ai, test_inputs, test_targets, 'Test')
+    test_accuracy = evaluate(emotion_ai, test_inputs, test_targets, 'Test')
+
+    print(train_accuracy, test_accuracy)
 
     # Save the model
     if not ARGS.no_save:

@@ -54,6 +54,6 @@ docs/_build/
 
 # Project-specific files to ignore
 faces
-models
+output
 .vscode
 *.npz

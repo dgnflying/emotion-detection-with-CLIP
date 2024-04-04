@@ -55,5 +55,6 @@ docs/_build/
 # Project-specific files to ignore
 faces
 output
+test_results
 .vscode
 *.npz

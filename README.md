@@ -85,11 +85,11 @@
 	### Arguments:
 	#### `--file` **OR** `-f`:
  	The file containing the model data\
-	**Example:** `py plot_data.py -f 2099-04-01-0` will replot the data of the user's first generated model from April 1st, 2099 (if the file was not renamed)
+	**Example:** `py plot_data.py -f 2099-04-01-0` will replot the data of the user's first generated model from April 1st, 2099 (if the file has not been renamed)
 
 	#### `--use_current_date` **OR** `-d`:
 	Use the current date as an initial part of file specification ***(NOT TO BE USED WHEN THE TARGET FILE HAS BEEN RENAMED)***\
-	**Example:** `py plot_data.py -d -f 0` will replot the data of the user's first generated model from the day this was ran (if the file was not renamed)
+	**Example:** `py plot_data.py -d -f 0` will replot the data of the user's first generated model from the day this command was ran (if the file has not been renamed)
 	
 	#### `--no_cm` **OR**  `-c`:
 	Opt out of displaying the model's confusion matrices

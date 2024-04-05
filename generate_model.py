@@ -8,7 +8,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+from sklearn.metrics import confusion_matrix
 
 from create_embeddings import PREPROC_IMGS_DIR, RAW_TRAIN_DIR, RAW_TEST_DIR, create_image_embeddings
 
@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument('--hidden_layers', '-l', type=int, default=[100], help='The hidden layers of the model', nargs='+')
 parser.add_argument('--learning_rate', '-r', type=float, default=0.001, help="The learning rate of the model")
-parser.add_argument('--batch_size', '-b', type=int, default=200, help='The batch size for training the model')
+parser.add_argument('--batch_size', '-b', type=int, default=64, help='The batch size for training the model')
 ARGS = parser.parse_args()
 HIDDEN_LAYERS = tuple(ARGS.hidden_layers)
 

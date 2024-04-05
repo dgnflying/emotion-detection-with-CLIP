@@ -57,4 +57,3 @@ faces
 output
 test_results
 .vscode
-*.npz

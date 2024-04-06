@@ -61,22 +61,23 @@
 1. Run `py generate_model.py` in the terminal:
 
 	### Arguments:
-	#### `--no_save` **OR** `-s`:
-	Opt out of saving the model
 	
 	#### `--hidden_layers` **OR** `-l`:
 	The hidden layers of the model ***(default: 100)***\
 	**Example:** `py generate_model.py -l 1000 500 100` generates a model architecture of `input -> 1000 nodes -> 500 nodes -> 100 nodes -> output`
 	
 	#### `--batch_size` **OR** `-b`:
-	Opt out of showing comparisons between each emotion's average image vector and their text counterpart ***(default: 200)***
+	The batch size for training the model ***(default: 64)***
 
 	#### `--learning_rate` **OR** `-r`:
 	The learning rate of the model ***(default: 0.001)***
 
-2. Once finished, if you saved your model by omitting `--no_save` as an argument, feel free to change your model's folder name at `/output/*current_date*-*iteration_number*` to something more memorable
+	#### `--max_iter` **OR** `-m`:
+	The maximum number of iterations for training the model ***(default: 200)***
+
+3. Once finished, feel free to change your model's folder name at `/output/*current_date*-*iteration_number*` to something more memorable
    
-   ***WARNING: If the original file name is changed from*** `*current_date*-*iteration_number*`, ***the*** `--use_current_date` ***(***`-d`***)*** ***argument within*** `plot_data.py` ***will be unusable***
+   ***WARNING: If the original file name is changed from*** `*current_date*-*iteration_number*`, ***the*** `--use_date` ***(***`-d`***)*** ***argument within*** `plot_data.py` ***will be unusable***
 
 ## Replotting past model data
 
@@ -87,15 +88,15 @@
  	The file containing the model data\
 	**Example:** `py plot_data.py -f 2099-04-01-0` will replot the data of the user's first generated model from April 1st, 2099 (if the file has not been renamed)
 
-	#### `--use_current_date` **OR** `-d`:
-	Use the current date as an initial part of file specification ***(NOT TO BE USED WHEN THE TARGET FILE HAS BEEN RENAMED)***\
+	#### `--use_date` **OR** `-d`:
+	Use the current date at the beginning of file specification ***(NOT TO BE USED WHEN THE TARGET FILE HAS BEEN RENAMED)***\
 	**Example:** `py plot_data.py -d -f 0` will replot the data of the user's first generated model from the day this command was ran (if the file has not been renamed)
 	
-	#### `--no_cm` **OR**  `-c`:
-	Opt out of displaying the model's confusion matrices
+	#### `--confusion_matrix` **OR**  `-c`:
+	Display the model's confusion matrices
 	
-	#### `--no_loss_curve` **OR** `-l`:
- 	Opt out of displaying the model's loss curve
+	#### `--loss_curve` **OR** `-l`:
+ 	Display the model's loss curve
 
 ## Plotting CLIP embedding vectors
 
@@ -105,11 +106,11 @@
 	#### `--batch_size` **OR** `-b`:
 	Batch size to feed encoder to produce vector embeddings ***(default: 32)***
 	
-	#### `--no_average` **OR** `-a`:
-	Opt out of showing the average vector for each emotion
+	#### `--average` **OR** `-a`:
+	Display the average vector for each emotion
 	
-	#### `--no_all` **OR** `-A`:
-	Opt out of showing all embeddings for every emotion
+	#### `--all` **OR** `-A`:
+	Display all embeddings for every emotion
 
-	#### `--no_comparison` **OR** `-c`:
-	Opt out of showing comparisons between each emotion's average image vector and their text counterpart
+	#### `--comparison` **OR** `-c`:
+	Display comparisons between each emotion's average image vector and their text counterpart

@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--hidden_layers', '-l', type=int, default=[100], help='The hidden layers of the model', nargs='+')
 parser.add_argument('--learning_rate', '-r', type=float, default=0.001, help="The learning rate of the model")
 parser.add_argument('--batch_size', '-b', type=int, default=64, help='The batch size for training the model')
+parser.add_argument('--max_iter', '-m', type=int, default=200, help='The maximum number of iterations for training the model')
 ARGS = parser.parse_args()
 HIDDEN_LAYERS = tuple(ARGS.hidden_layers)
 
@@ -42,7 +43,7 @@ def train(inputs, targets):
         hidden_layer_sizes=HIDDEN_LAYERS,
         batch_size=ARGS.batch_size,
         learning_rate_init=ARGS.learning_rate,
-        max_iter=500,
+        max_iter=ARGS.max_iter,
         random_state=0,
         verbose=True,
     ).fit(inputs, targets)

@@ -10,12 +10,12 @@ parser = argparse.ArgumentParser(
     description="Plot the embeddings of the images in the dataset to visualize the distribution of the data."
 )
 parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size to feed encoder to produce vector embeddings')
-parser.add_argument('--no_average', '-a', help='Opt out of showing the average vector for each emotion', action=argparse.BooleanOptionalAction)
-parser.add_argument('--no_all', '-A', help='Opt out of showing all embeddings for every emotion', action=argparse.BooleanOptionalAction)
+parser.add_argument('--average', '-a', help='Display the average vector for each emotion', action=argparse.BooleanOptionalAction)
+parser.add_argument('--all', '-A', help='Display all embeddings for every emotion', action=argparse.BooleanOptionalAction)
 parser.add_argument(
-    '--no_comparison',
+    '--comparison',
     '-c',
-    help="Opt out of showing comparisons between each emotion's average image vector and their text counterpart",
+    help="Display comparisons between each emotion's average image vector and their text counterpart",
     action=argparse.BooleanOptionalAction
 )
 ARGS = parser.parse_args()
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     img_data = TSNE(random_state=0, verbose=1).fit_transform(img_vecs)
 
     # Plot all embeddings for every emotion
-    if not ARGS.no_all:
+    if ARGS.all:
         plt.figure(figsize=FIG_SIZE)
         plt.suptitle('Scatter Plot of Emotions')
         for i, emotion in enumerate(EMOTIONS):
@@ -56,7 +56,7 @@ if __name__ == '__main__':
             plt.legend()
 
     # Plot average vector for each emotion
-    if not ARGS.no_average:
+    if ARGS.average:
         plt.figure(figsize=FIG_SIZE)
         plt.suptitle('Average Vector of Emotions')
         for i, emotion in enumerate(EMOTIONS):
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         plt.legend()
 
     # Plot comparisons between each emotion's average image vector and their text counterpart
-    if not ARGS.no_comparison:
+    if ARGS.comparison:
 
         text_vecs, text_targets = get_embeddings('TEXT', PREPROC_TEXT_DIR)
         text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)

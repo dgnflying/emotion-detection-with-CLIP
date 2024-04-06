@@ -11,13 +11,13 @@ from create_embeddings import EMOTIONS
 # Parse the arguments
 parser = argparse.ArgumentParser(description='Replot the model data')
 parser.add_argument('--file', '-f', type=str, help='The file containing the model data', required=True)
-parser.add_argument('--no_cm', '-c', help="Opt out of displaying the model's confusion matrices", action=argparse.BooleanOptionalAction)
-parser.add_argument('--no_loss_curve', '-l', help="Opt out of displaying the model's loss curve", action=argparse.BooleanOptionalAction)
-parser.add_argument('--use_current_date', '-d', help="Use the current data as the first three values in file specification", action=argparse.BooleanOptionalAction)
+parser.add_argument('--confusion_matrix', '-c', help="Display the model's confusion matrices", action=argparse.BooleanOptionalAction)
+parser.add_argument('--loss_curve', '-l', help="Display the model's loss curve", action=argparse.BooleanOptionalAction)
+parser.add_argument('--use_date', '-d', help="Use the current date at the beginning of file specification", action=argparse.BooleanOptionalAction)
 ARGS = parser.parse_args()
 
 # Get the file name
-if ARGS.use_current_date:
+if ARGS.use_date:
     FILE = f"{time.strftime('%Y-%m-%d')}-{ARGS.file}"
 else:
     FILE = ARGS.file
@@ -61,10 +61,10 @@ def plot_cm(FILE):
 if __name__ == '__main__':
 
     # Plot the data
-    if not ARGS.no_loss_curve:
+    if ARGS.loss_curve:
         plot_loss_curve(FILE_DIR)
 
-    if not ARGS.no_cm:
+    if ARGS.confusion_matrix:
         plot_cm(FILE_DIR)
 
     plt.show()

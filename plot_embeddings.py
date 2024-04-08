@@ -1,4 +1,5 @@
 import argparse
+import seaborn as sns
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,9 +20,20 @@ parser.add_argument(
     help="Display comparisons between each emotion's average image vector and their text counterpart",
     action=argparse.BooleanOptionalAction
 )
+parser.add_argument('--titles', '-T', help='Display the titles of the plots', action=argparse.BooleanOptionalAction)
 ARGS = parser.parse_args()
 
 FIG_SIZE = (10, 8)
+
+COLORS = {
+    'angry': {'text': sns.light_palette("red")[3], 'image': sns.dark_palette("red")[3]},
+    'disgust': {'text': sns.light_palette("green")[3], 'image': sns.dark_palette("green")[3]},
+    'fear': {'text': sns.light_palette("purple")[3], 'image': sns.dark_palette("purple")[3]},
+    'happy': {'text': sns.light_palette("yellow")[3], 'image': sns.dark_palette("yellow")[3]},
+    'neutral': {'text': sns.light_palette("gray")[3], 'image': sns.dark_palette("gray")[3]},
+    'sad': {'text': sns.light_palette("blue")[3], 'image': sns.dark_palette("blue")[3]},
+    'surprise': {'text': sns.light_palette("orange")[3], 'image': sns.dark_palette("orange")[3]},
+}
 
 def get_embeddings(type, directory):
     if type == 'IMGS':
@@ -49,23 +61,29 @@ if __name__ == '__main__':
     # Plot all embeddings for every emotion
     if ARGS.all:
         plt.figure(figsize=FIG_SIZE)
-        plt.suptitle('Scatter Plot of Emotions')
+        if ARGS.titles:
+            plt.suptitle('Scatter Plot of Emotions')
         for i, emotion in enumerate(EMOTIONS):
+            color_image = COLORS[emotion]['image']
             indices = img_targets == i
-            plt.scatter(img_data[indices, 0], img_data[indices, 1], label=emotion)
-            plt.title('t-SNE Visualization of the "Train" Image Embeddings')
+            plt.scatter(img_data[indices, 0], img_data[indices, 1], label=emotion, color=color_image)
+            if ARGS.titles:
+                plt.title('t-SNE Visualization of the "Train" Image Embeddings')
             plt.legend()
 
     # Plot average vector for each emotion
     if ARGS.average:
         plt.figure(figsize=FIG_SIZE)
-        plt.suptitle('Average Vector of Emotions')
+        if ARGS.titles:
+            plt.suptitle('Average Vector of Emotions')
         for i, emotion in enumerate(EMOTIONS):
+            color_image = COLORS[emotion]['image']
             indices = img_targets == i
             avg_vec = np.mean(img_data[indices], axis=0)
-            plt.scatter(avg_vec[0], avg_vec[1], label=emotion)
-            plt.plot([0, avg_vec[0]], [0, avg_vec[1]])
-        plt.title('t-SNE Visualization of the average "Train" Image Embeddings')
+            plt.scatter(avg_vec[0], avg_vec[1], label=emotion, color=color_image)
+            plt.plot([0, avg_vec[0]], [0, avg_vec[1]], color=color_image)
+        if ARGS.titles:
+            plt.title('t-SNE Visualization of the average "Train" Image Embeddings')
         plt.axhline(0, color='black')
         plt.axvline(0, color='black')
         plt.legend()
@@ -76,12 +94,15 @@ if __name__ == '__main__':
         text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)
 
         plt.figure(figsize=FIG_SIZE)
-        plt.suptitle('Scatter Plot of Text Emotions')
+        if ARGS.titles:
+            plt.suptitle('Scatter Plot of Text Emotions')
         for i, emotion in enumerate(EMOTIONS):
+            color_text = COLORS[emotion]['text']
             indices = text_targets == i
-            plt.scatter(text_data[indices, 0], text_data[indices, 1], label=emotion)
-            plt.plot([0, text_data[indices, 0][0]], [0, text_data[indices, 1][0]])
-            plt.title('t-SNE Visualization of the Text Embeddings')
+            plt.scatter(text_data[indices, 0], text_data[indices, 1], label=emotion, color=color_text)
+            plt.plot([0, text_data[indices, 0][0]], [0, text_data[indices, 1][0]], color=color_text)
+            if ARGS.titles:
+                plt.title('t-SNE Visualization of Text Embeddings')
             plt.axhline(0, color='black')
             plt.axvline(0, color='black')
             plt.legend()
@@ -93,19 +114,22 @@ if __name__ == '__main__':
         text_vecs, text_targets = get_embeddings('TEXT', PREPROC_TEXT_DIR)
         text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)
 
+        plt.figure(figsize=FIG_SIZE)
         for i, emotion in enumerate(EMOTIONS):
-            plt.figure(figsize=FIG_SIZE)
+            color_text = COLORS[emotion]['text']
+            color_image = COLORS[emotion]['image']
             text_indices = text_targets == i
             avg_img_vec = np.mean(img_data[img_targets == i], axis=0)
-            plt.scatter(text_data[text_indices, 0], text_data[text_indices, 1], label=f'{emotion.capitalize()} (Text)')
-            plt.plot([0, text_data[text_indices, 0][0]], [0, text_data[text_indices, 1][0]])
-            plt.scatter(avg_img_vec[0], avg_img_vec[1], label=f'{emotion.capitalize()} (Image)')
-            plt.plot([0, avg_img_vec[0]], [0, avg_img_vec[1]])
+            plt.scatter(text_data[text_indices, 0], text_data[text_indices, 1], label=f'{emotion.capitalize()} (Text)', color=color_text)
+            plt.plot([0, text_data[text_indices, 0][0]], [0, text_data[text_indices, 1][0]], color=color_text)
+            plt.scatter(avg_img_vec[0], avg_img_vec[1], label=f'{emotion.capitalize()} (Image)', color=color_image)
+            plt.plot([0, avg_img_vec[0]], [0, avg_img_vec[1]], color=color_image)
+        if ARGS.titles:
             plt.title(
-                f'{emotion.upper()}: t-SNE Visualization of the average of the "Train" Image Embeddings compared with their Text Counterparts'
+                't-SNE Visualization of the average of the "Train" Image Embeddings compared with their Text Counterparts'
             )
-            plt.axhline(0, color='black')
-            plt.axvline(0, color='black')
-            plt.legend()
+        plt.axhline(0, color='black')
+        plt.axvline(0, color='black')
+        plt.legend()
 
     plt.show()

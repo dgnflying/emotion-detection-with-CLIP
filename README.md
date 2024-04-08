@@ -45,6 +45,8 @@
 	```pip install tqdm```
 	
 	```pip install matplotlib```
+
+	```pip install seaborn```
 	
 	Or with **conda**:
 	
@@ -55,6 +57,8 @@
 	```conda install tqdm```
 	
 	```conda install matplotlib```
+
+	```conda install seaborn```
 
 ## Creating a model
 

@@ -3,7 +3,9 @@
 
 •	Generates AI models that detect human facial emotion
 
-•	Plots text and image embeddings of human facial-related data for collection and comparison
+•	Displays emotion model loss curve and confusion matrix graphs
+
+•	Plots image and text embeddings of human facial-related data for collection and comparison
 
   
 

@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size to feed encoder to produce vector embeddings')
 parser.add_argument('--average', '-a', help='Display the average vector for each emotion', action=argparse.BooleanOptionalAction)
 parser.add_argument('--all', '-A', help='Display all embeddings for every emotion', action=argparse.BooleanOptionalAction)
+parser.add_argument('--text', '-t', help='Display the text embeddings of the emotions', action=argparse.BooleanOptionalAction)
 parser.add_argument(
     '--comparison',
     '-c',
@@ -68,6 +69,23 @@ if __name__ == '__main__':
         plt.axhline(0, color='black')
         plt.axvline(0, color='black')
         plt.legend()
+
+    # Plot the text vectors
+    if ARGS.text:
+        text_vecs, text_targets = get_embeddings('TEXT', PREPROC_TEXT_DIR)
+        text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)
+
+        plt.figure(figsize=FIG_SIZE)
+        plt.suptitle('Scatter Plot of Text Emotions')
+        for i, emotion in enumerate(EMOTIONS):
+            indices = text_targets == i
+            plt.scatter(text_data[indices, 0], text_data[indices, 1], label=emotion)
+            plt.plot([0, text_data[indices, 0][0]], [0, text_data[indices, 1][0]])
+            plt.title('t-SNE Visualization of the Text Embeddings')
+            plt.axhline(0, color='black')
+            plt.axvline(0, color='black')
+            plt.legend()
+
 
     # Plot comparisons between each emotion's average image vector and their text counterpart
     if ARGS.comparison:

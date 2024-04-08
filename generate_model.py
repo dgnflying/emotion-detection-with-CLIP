@@ -125,4 +125,4 @@ if __name__ == '__main__':
     )
 
     # Display the result graphs
-    os.system(f"py plot_data.py -f {MODEL_DIR.name}")
+    os.system(f"py plot_data.py -f {MODEL_DIR.name} -l -c")

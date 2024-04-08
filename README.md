@@ -121,3 +121,6 @@
 
 	#### `--comparison` **OR** `-c`:
 	Display comparisons between each emotion's average image vector and their text counterpart
+
+	#### `--titles` **OR** `-T`:
+	Generate titles for the plots

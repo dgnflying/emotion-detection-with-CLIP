@@ -112,5 +112,8 @@
 	#### `--all` **OR** `-A`:
 	Display all embeddings for every emotion
 
+	#### `--text` **OR** `-t`:
+	Display the text embeddings of the emotions
+
 	#### `--comparison` **OR** `-c`:
 	Display comparisons between each emotion's average image vector and their text counterpart

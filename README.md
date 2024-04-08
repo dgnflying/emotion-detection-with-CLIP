@@ -5,6 +5,8 @@
 
 •	Displays emotion model loss curve and confusion matrix graphs
 
+•	Generates text and image embeddings of human facial-related data
+
 •	Plots image and text embeddings of human facial-related data for collection and comparison
 
   

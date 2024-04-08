@@ -3,7 +3,11 @@
 
 •	Generates AI models that detect human facial emotion
 
-•	Plots text and image embeddings of human facial-related data for collection and comparison
+•	Displays emotion model loss curve and confusion matrix graphs
+
+•	Generates text and image embeddings of human facial-related data
+
+•	Plots image and text embeddings of human facial-related data for collection and comparison
 
   
 
@@ -45,6 +49,8 @@
 	```pip install tqdm```
 	
 	```pip install matplotlib```
+
+	```pip install seaborn```
 	
 	Or with **conda**:
 	
@@ -55,6 +61,8 @@
 	```conda install tqdm```
 	
 	```conda install matplotlib```
+
+	```conda install seaborn```
 
 ## Creating a model
 
@@ -117,3 +125,6 @@
 
 	#### `--comparison` **OR** `-c`:
 	Display comparisons between each emotion's average image vector and their text counterpart
+
+	#### `--titles` **OR** `-T`:
+	Generate titles for the plots

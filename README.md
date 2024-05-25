@@ -1,5 +1,5 @@
 
-# emotion-detection
+# clip-capabilities
 
 •	Generates AI models that detect human facial emotion
 

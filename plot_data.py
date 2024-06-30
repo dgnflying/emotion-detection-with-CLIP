@@ -18,53 +18,53 @@ ARGS = parser.parse_args()
 
 # Get the file name
 if ARGS.use_date:
-    FILE = f"{time.strftime('%Y-%m-%d')}-{ARGS.file}"
+  FILE = f"{time.strftime('%Y-%m-%d')}-{ARGS.file}"
 else:
-    FILE = ARGS.file
+  FILE = ARGS.file
 
 # Check for existence of the file
 FILE_DIR = Path('output') / FILE
 if not FILE_DIR.is_dir():
-    raise ValueError(f'File {str(FILE_DIR)} does not exist')
+  raise ValueError(f'File {str(FILE_DIR)} does not exist')
 
 def plot_loss_curve(FILE):
 
-    # Load the loss curve data
-    data = np.load(FILE / "loss_curve.npz")
-    loss_curve = data['loss_curve']
+  # Load the loss curve data
+  data = np.load(FILE / "loss_curve.npz")
+  loss_curve = data['loss_curve']
 
-    # Plot the loss curve
-    plt.plot(loss_curve)
-    plt.title(f'{FILE.name} Loss Curve')
-    plt.xlabel('Iteration')
-    plt.ylabel('Loss')
+  # Plot the loss curve
+  plt.plot(loss_curve)
+  plt.title(f'{FILE.name} Loss Curve')
+  plt.xlabel('Iteration')
+  plt.ylabel('Loss')
 
 def plot_cm(FILE):
 
-    # Load the confusion matrix data
-    data = np.load(FILE / "confusion_matrices.npz")
-    train_cm = data['train_cm']
-    test_cm = data['test_cm']
+  # Load the confusion matrix data
+  data = np.load(FILE / "confusion_matrices.npz")
+  train_cm = data['train_cm']
+  test_cm = data['test_cm']
 
-    # Plot the training confusion matrix
-    cm_display = ConfusionMatrixDisplay(train_cm, display_labels=EMOTIONS)
-    _, ax = plt.subplots()
-    cm_display.plot(ax=ax)
-    ax.set_title(f"{FILE.name} Training Confusion Matrix")
+  # Plot the training confusion matrix
+  cm_display = ConfusionMatrixDisplay(train_cm, display_labels=EMOTIONS)
+  _, ax = plt.subplots()
+  cm_display.plot(ax=ax)
+  ax.set_title(f"{FILE.name} Training Confusion Matrix")
 
-    # Plot the testing confusion matrix
-    cm_display = ConfusionMatrixDisplay(test_cm, display_labels=EMOTIONS)
-    _, ax = plt.subplots()
-    cm_display.plot(ax=ax)
-    ax.set_title(f"{FILE.name} Testing Confusion Matrix")
+  # Plot the testing confusion matrix
+  cm_display = ConfusionMatrixDisplay(test_cm, display_labels=EMOTIONS)
+  _, ax = plt.subplots()
+  cm_display.plot(ax=ax)
+  ax.set_title(f"{FILE.name} Testing Confusion Matrix")
 
 if __name__ == '__main__':
 
-    # Plot the data
-    if ARGS.loss_curve:
-        plot_loss_curve(FILE_DIR)
+  # Plot the data
+  if ARGS.loss_curve:
+    plot_loss_curve(FILE_DIR)
 
-    if ARGS.confusion_matrix:
-        plot_cm(FILE_DIR)
+  if ARGS.confusion_matrix:
+    plot_cm(FILE_DIR)
 
-    plt.show()
+  plt.show()

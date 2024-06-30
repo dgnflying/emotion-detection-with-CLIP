@@ -90,45 +90,45 @@ if __name__ == '__main__':
 
   # Plot the text vectors
   if ARGS.text:
-      text_vecs, text_targets = get_embeddings('TEXT', PREPROC_TEXT_DIR)
-      text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)
+    text_vecs, text_targets = get_embeddings('TEXT', PREPROC_TEXT_DIR)
+    text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)
 
-      plt.figure(figsize=FIG_SIZE)
+    plt.figure(figsize=FIG_SIZE)
+    if ARGS.titles:
+      plt.suptitle('Scatter Plot of Text Emotions')
+    for i, emotion in enumerate(EMOTIONS):
+      color_text = COLORS[emotion]['text']
+      indices = text_targets == i
+      plt.scatter(text_data[indices, 0], text_data[indices, 1], label=emotion, color=color_text)
+      plt.plot([0, text_data[indices, 0][0]], [0, text_data[indices, 1][0]], color=color_text)
       if ARGS.titles:
-          plt.suptitle('Scatter Plot of Text Emotions')
-      for i, emotion in enumerate(EMOTIONS):
-          color_text = COLORS[emotion]['text']
-          indices = text_targets == i
-          plt.scatter(text_data[indices, 0], text_data[indices, 1], label=emotion, color=color_text)
-          plt.plot([0, text_data[indices, 0][0]], [0, text_data[indices, 1][0]], color=color_text)
-          if ARGS.titles:
-              plt.title('t-SNE Visualization of Text Embeddings')
-          plt.axhline(0, color='black')
-          plt.axvline(0, color='black')
-          plt.legend()
-
-  # Plot comparisons between each emotion's average image vector and their text counterpart
-  if ARGS.comparison:
-
-      text_vecs, text_targets = get_embeddings('TEXT', PREPROC_TEXT_DIR)
-      text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)
-
-      plt.figure(figsize=FIG_SIZE)
-      for i, emotion in enumerate(EMOTIONS):
-          color_text = COLORS[emotion]['text']
-          color_image = COLORS[emotion]['image']
-          text_indices = text_targets == i
-          avg_img_vec = np.mean(img_data[img_targets == i], axis=0)
-          plt.scatter(text_data[text_indices, 0], text_data[text_indices, 1], label=f'{emotion.capitalize()} (Text)', color=color_text)
-          plt.plot([0, text_data[text_indices, 0][0]], [0, text_data[text_indices, 1][0]], color=color_text)
-          plt.scatter(avg_img_vec[0], avg_img_vec[1], label=f'{emotion.capitalize()} (Image)', color=color_image)
-          plt.plot([0, avg_img_vec[0]], [0, avg_img_vec[1]], color=color_image)
-      if ARGS.titles:
-          plt.title(
-              't-SNE Visualization of the average of the "Train" Image Embeddings compared with their Text Counterparts'
-          )
+          plt.title('t-SNE Visualization of Text Embeddings')
       plt.axhline(0, color='black')
       plt.axvline(0, color='black')
       plt.legend()
 
-  plt.show()
+  # Plot comparisons between each emotion's average image vector and their text counterpart
+  if ARGS.comparison:
+
+    text_vecs, text_targets = get_embeddings('TEXT', PREPROC_TEXT_DIR)
+    text_data = TSNE(random_state=0, verbose=1, perplexity=5).fit_transform(text_vecs)
+
+    plt.figure(figsize=FIG_SIZE)
+    for i, emotion in enumerate(EMOTIONS):
+      color_text = COLORS[emotion]['text']
+      color_image = COLORS[emotion]['image']
+      text_indices = text_targets == i
+      avg_img_vec = np.mean(img_data[img_targets == i], axis=0)
+      plt.scatter(text_data[text_indices, 0], text_data[text_indices, 1], label=f'{emotion.capitalize()} (Text)', color=color_text)
+      plt.plot([0, text_data[text_indices, 0][0]], [0, text_data[text_indices, 1][0]], color=color_text)
+      plt.scatter(avg_img_vec[0], avg_img_vec[1], label=f'{emotion.capitalize()} (Image)', color=color_image)
+      plt.plot([0, avg_img_vec[0]], [0, avg_img_vec[1]], color=color_image)
+    if ARGS.titles:
+      plt.title(
+        't-SNE Visualization of the average of the "Train" Image Embeddings compared with their Text Counterparts'
+      )
+    plt.axhline(0, color='black')
+    plt.axvline(0, color='black')
+    plt.legend()
+
+plt.show()

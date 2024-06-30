@@ -1,11 +1,9 @@
 
-# emotion-detection
+# clip-capabilities
 
-•	Generates AI models that detect human facial emotion
+•	Generates AI models that detect human facial emotion and text/image embeddings of human facial-related data
 
 •	Displays emotion model loss curve and confusion matrix graphs
-
-•	Generates text and image embeddings of human facial-related data
 
 •	Plots image and text embeddings of human facial-related data for collection and comparison
 

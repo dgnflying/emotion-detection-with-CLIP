@@ -1,44 +1,18 @@
 
 # clip-capabilities
 
-•	Generates AI models that detect human facial emotion and text/image embeddings of human facial-related data
+•	Generate AI models that detect human facial emotion and text/image embeddings of human facial-related data
 
-•	Displays emotion model loss curve and confusion matrix graphs
+•	Display emotion model performance data (i.e. loss curve, confusion matrix, etc.)
 
-•	Plots image and text embeddings of human facial-related data for collection and comparison
+•	Plot image and text embeddings of human facial-related data for collection and comparison
 
   
 
 # Instructions
-## Getting Started
+## Dependencies
 
-1. Download the faces dataset at `https://www.kaggle.com/datasets/msambare/fer2013`
-
-  
-
-2. Unzip the file and add it to your workspace as `faces`
-
-
-
-3. Reconfigure your `faces` to this ***EXACT*** structure:
-   
-```
-	├── faces
-	│   ├── raw_data
-	│   │   ├── test
-	|   │   │   ├── (images)
-	│   │   ├── train
-	|   │   │   ├── (images)
-	│   ├── preprocessed_data
-	│   │   ├── image_embeddings
-	|   │   │   ├── (empty)
-	│   │   ├── text_embeddings
-	|   │   │   ├── (empty)
- ```
-
-5. Install project dependencies:
-
-	With **pip**:
+Install with **pip**:
 	
 	```pip install scikit-learn```
 	
@@ -47,11 +21,11 @@
 	```pip install tqdm```
 	
 	```pip install matplotlib```
-
+	
 	```pip install seaborn```
-	
-	Or with **conda**:
-	
+
+Or install with **conda**:
+
 	```conda install scikit-learn```
 	
 	```conda install pillow```
@@ -59,7 +33,7 @@
 	```conda install tqdm```
 	
 	```conda install matplotlib```
-
+	
 	```conda install seaborn```
 
 ## Creating a model

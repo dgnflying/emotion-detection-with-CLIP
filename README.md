@@ -14,15 +14,15 @@
 
 Install with **pip**:
 	
-	`pip install scikit-learn`
+	pip install scikit-learn
 	
-	```pip install Pillow```
+	pip install Pillow
 	
-	```pip install tqdm```
+	pip install tqdm
 	
-	```pip install matplotlib```
+	pip install matplotlib
 	
-	```pip install seaborn```
+	pip install seaborn
 
 Or install with **conda**:
 

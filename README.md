@@ -26,15 +26,15 @@ Install with **pip**:
 
 Or install with **conda**:
 
-	```conda install scikit-learn```
+	conda install scikit-learn
 	
-	```conda install pillow```
+	conda install pillow
 	
-	```conda install tqdm```
+	conda install tqdm
 	
-	```conda install matplotlib```
+	conda install matplotlib
 	
-	```conda install seaborn```
+	conda install seaborn
 
 ## Creating a model
 

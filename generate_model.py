@@ -96,7 +96,7 @@ def save_data(classifier, train_cm, test_cm, train_results, test_results):
     if not OUTPUT_DIR.is_dir():
         OUTPUT_DIR.mkdir()
     model_iter = 0
-    date_str = time.strftime("%Y-%m-%d")
+    date_str = time.strftime("%Y-%m-%d-%H-%M-%S")
     while (MODEL_DIR := OUTPUT_DIR / f"{date_str}-{model_iter}").is_dir():
         model_iter += 1
     MODEL_DIR.mkdir()
@@ -138,9 +138,7 @@ if __name__ == "__main__":
     emotion_ai = train(train_inputs, train_targets)
 
     # Test the model on training data
-    train_cm, train_accuracy = evaluate(
-        emotion_ai, train_inputs, train_targets, "Train"
-    )
+    train_cm, accuracy = evaluate(emotion_ai, train_inputs, train_targets, "Train")
 
     # Test the model on testing data
     test_inputs, test_targets = get_data(RAW_TEST_DIR)
@@ -151,7 +149,7 @@ if __name__ == "__main__":
         emotion_ai,
         train_cm=train_cm,
         test_cm=test_cm,
-        train_results=train_accuracy,
+        train_results=accuracy,
         test_results=test_accuracy,
     )
 

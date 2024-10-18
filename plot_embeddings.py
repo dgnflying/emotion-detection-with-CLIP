@@ -1,28 +1,24 @@
 import argparse
-import seaborn as sns
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.manifold import TSNE
+import seaborn as sns
 
 from create_embeddings import (
-    PREPROC_TEXT_DIR,
-    PREPROC_IMGS_DIR,
-    RAW_TRAIN_DIR,
-    EMOTIONS,
+    data_path,
+    embedding_path,
     create_text_embeddings,
     create_image_embeddings,
 )
 
+EMOTIONS = ["angry", "disgust", "fear", "happy", "neutral", "sad", "surprise"]
+
+embeddings_path = os.path.join(os.getcwd(), "data")
+
 parser = argparse.ArgumentParser(
     description="Plot the embeddings of the images in the dataset to visualize the distribution of the data."
-)
-parser.add_argument(
-    "--batch_size",
-    "-b",
-    type=int,
-    default=32,
-    help="Batch size to feed encoder to produce vector embeddings",
 )
 parser.add_argument(
     "--average",
@@ -84,7 +80,7 @@ COLORS = {
 }
 
 
-def get_embeddings(type, directory):
+def get_embeddings(type):
     if type == "IMGS":
         preproc_filename = PREPROC_IMGS_DIR / f"{directory.name}.npz"
     elif type == "TEXT":
@@ -98,9 +94,9 @@ def get_embeddings(type, directory):
         return vecs, targets
     else:
         if type == "IMGS":
-            return create_image_embeddings(directory, ARGS.batch_size)
+            return create_image_embeddings()
         elif type == "TEXT":
-            return create_text_embeddings(directory)
+            return create_text_embeddings()
 
 
 if __name__ == "__main__":

@@ -53,7 +53,10 @@ docs/_build/
 *.pickle
 
 # Project-specific files to ignore
-faces
+data
 output
 test_results
+
+# IDE-specific files to ignore
 .vscode
+.conda

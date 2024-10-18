@@ -12,28 +12,20 @@
 # Instructions
 ## Getting Started
 
-1. Download the faces dataset at `https://www.kaggle.com/datasets/msambare/fer2013`
+1. Download the FER2013 test and train set `fer2013.tar.gz` file at `https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data?select=test.csv`
 
-  
+2. Create a `data` folder in your workspace
+3. Create a `FER2013` folder in your `data` folder
+4. Add the contents of the `fer2013.tar.gz` file to your FER2013 folder
 
-2. Unzip the file and add it to your workspace as `faces`
 
+Your data folder should have this ***EXACT*** structure:
 
-
-3. Reconfigure your `faces` to this ***EXACT*** structure:
-   
 ```
-	├── faces
-	│   ├── raw_data
-	│   │   ├── test
-	|   │   │   ├── (images)
-	│   │   ├── train
-	|   │   │   ├── (images)
-	│   ├── preprocessed_data
-	│   │   ├── image_embeddings
-	|   │   │   ├── (empty)
-	│   │   ├── text_embeddings
-	|   │   │   ├── (empty)
+	├── data
+	│   ├── FER2013
+	│   │   ├── test.csv
+	│   │   ├── train.csv
  ```
 
 5. Install project dependencies:

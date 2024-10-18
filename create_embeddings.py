@@ -1,114 +1,164 @@
-from pathlib import Path
+import os
+import argparse
 
 import torch
 import numpy as np
-from PIL import Image
 from tqdm import tqdm
 from transformers import AutoProcessor, AutoModel
-from torch.utils.data import TensorDataset, DataLoader
+from torchvision import transforms, datasets
 
-MODEL_ID = 'openai/clip-vit-base-patch16'
+parser = argparse.ArgumentParser(
+    description="Generate embeddings for images and text using OpenAI's CLIP model"
+)
 
-DATA_DIR = Path(__file__).parent / 'faces'
-PREPROC_IMGS_DIR = DATA_DIR / 'preprocessed_data' / 'image_embeddings'
-PREPROC_TEXT_DIR = DATA_DIR / 'preprocessed_data' / 'text_embeddings'
-RAW_TRAIN_DIR = DATA_DIR / 'raw_data' / 'train'
-RAW_TEST_DIR = DATA_DIR / 'raw_data' / 'test'
-if not DATA_DIR.is_dir():
-  raise ValueError(f'Path {str(DATA_DIR)} does not exist')
-if not PREPROC_IMGS_DIR.is_dir():
-  PREPROC_IMGS_DIR.mkdir(parents=True)
-if not RAW_TRAIN_DIR.is_dir():
-  raise ValueError(f'Path {str(RAW_TRAIN_DIR)} does not exist')
-if not RAW_TEST_DIR.is_dir():
-  raise ValueError(f'Path {str(RAW_TEST_DIR)} does not exist')
-if not (set(p.name for p in RAW_TEST_DIR.iterdir() if p.is_dir()) <= set(p.name for p in RAW_TRAIN_DIR.iterdir() if p.is_dir())):
-  raise ValueError('There are `test` labels that do not exist in `train`')
+parser.add_argument(
+    "--batch_size",
+    "-b",
+    type=int,
+    default=32,
+    help="The batch size for generating embeddings",
+)
 
-EMOTIONS = sorted((p.name for p in RAW_TRAIN_DIR.iterdir() if p.is_dir()))
+parser.add_argument(
+    "--create_image_embeddings",
+    "-i",
+    help="Create image embeddings",
+    action=argparse.BooleanOptionalAction,
+)
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+parser.add_argument(
+    "--create_text_embeddings",
+    "-t",
+    help="Create text embeddings",
+    action=argparse.BooleanOptionalAction,
+)
+
+ARGS = parser.parse_args()
+
+MODEL_ID = "openai/clip-vit-base-patch16"
+
+data_path = os.path.join(os.getcwd(), "data")
+embeddings_path = os.path.join(data_path, "fer2013", "embedding_data")
+
+device = "cpu"
+if torch.cuda.is_available():
+    device = "cuda:0"
+
+
+def custom_transform(img):
+    return np.array(img.convert("RGB")).transpose(2, 0, 1)
+
 
 def create_image_embeddings(
-  directory,
-  batch_size,
-  model=None,
-  processor=None
+    data_path=data_path,
+    batch_size=ARGS.batch_size,
+    model=None,
+    processor=None,
 ):
 
-  if model == None:
-    model = AutoModel.from_pretrained(MODEL_ID).to(DEVICE)
-  if processor == None:
-    processor = AutoProcessor.from_pretrained(MODEL_ID)
+    if model == None:
+        model = AutoModel.from_pretrained(MODEL_ID).to(device)
+    if processor == None:
+        processor = AutoProcessor.from_pretrained(MODEL_ID)
 
-  preproc_filename = PREPROC_IMGS_DIR / f'{directory.name}.npz'
-  if preproc_filename.exists():
-    print(f'Files for {directory.name} are already preprocessed.')
-  else:
-    imgs = np.stack([
-      np.array(Image.open(filename).convert("RGB")).transpose(2, 0, 1)
-      for emotion in tqdm(EMOTIONS, desc=f'Extracting {directory.name}ing data')
-      if (directory / emotion).is_dir()
-      for filename in sorted((directory / emotion).iterdir())
-      if filename.suffix == '.jpg'
-    ])
-    targets = np.array([
-      label
-      for label, emotion in enumerate(EMOTIONS)
-      if (directory / emotion).is_dir()
-      for filename in sorted((directory / emotion).iterdir())
-      if filename.suffix == '.jpg'
-    ])
-    dataset = DataLoader(
-      TensorDataset(torch.from_numpy(imgs)),
-      batch_size=batch_size,
-    )
-    with torch.inference_mode():
-      img_vecs = torch.cat([
-        model.get_image_features(**processor(images=img_batch, return_tensors='pt').to(DEVICE))
-        for (img_batch,) in tqdm(dataset, desc='Producing image vectors')
-      ])
-    img_vecs = np.array(img_vecs.cpu())
-    np.savez_compressed(preproc_filename, vecs=img_vecs, targets=targets)
-    print(f'Preprocessed data saved to "{preproc_filename}"')
-    return img_vecs, targets
+    train_embeddings_file = os.path.join(embeddings_path, "train_image_embeddings.npz")
+    test_embeddings_file = os.path.join(embeddings_path, "test_image_embeddings.npz")
 
-def create_text_embeddings(
-  directory,
-  model=None,
-  processor=None
-):
+    # Ensure the embedding directory exists
+    os.makedirs(embeddings_path, exist_ok=True)
 
-  if model == None:
-    model = AutoModel.from_pretrained(MODEL_ID).to(DEVICE)
-  if processor == None:
-    processor = AutoProcessor.from_pretrained(MODEL_ID)
+    if os.path.exists(train_embeddings_file):
+        print("Training image embeddings found")
+    else:
+        transform = transforms.Compose([transforms.Lambda(custom_transform)])
+        train_set = datasets.FER2013(root=data_path, transform=transform, split="train")
 
-  preproc_filename = PREPROC_TEXT_DIR / f'{directory.name}.npz'
-  if preproc_filename.exists():
-    print(f'Files for {directory.name} are already preprocessed.')
-  else:
-    phrases = []
-    for emotion in EMOTIONS:
-      if emotion == 'angry':
-        phrases.append('An angry human face')
-      elif emotion == 'disgust':
-        phrases.append('A disgusted human face')
-      elif emotion == 'fear':
-        phrases.append('A fearful human face')
-      elif emotion == 'happy':
-        phrases.append('A happy human face')
-      elif emotion == 'neutral':
-        phrases.append('A neutral human face')
-      elif emotion == 'sad':
-        phrases.append('A sad human face')
-      elif emotion == 'surprise':
-        phrases.append('A surprised human face')
-    targets = np.array(range(len(EMOTIONS)))
-    with torch.inference_mode():
-      text_vecs = model.get_text_features(**processor(text=phrases, return_tensors='pt', padding=True).to(DEVICE))
+        train_loader = torch.utils.data.DataLoader(
+            train_set, batch_size=batch_size, shuffle=True, num_workers=8
+        )
+        with torch.inference_mode():
+            train_img_embeddings = []
+            train_labels = []
+            for image_batch, label_batch in tqdm(train_loader, desc="Producing train image vectors"):
+                features = model.get_image_features(
+                    **processor(images=image_batch, return_tensors="pt").to(device)
+                )
+                train_labels.append(label_batch)
+                train_img_embeddings.append(features)
+            train_img_embeddings = torch.cat(train_img_embeddings)
+            train_labels = torch.cat(train_labels)
 
-    text_vecs = np.array(text_vecs.cpu())
-    np.savez_compressed(preproc_filename, vecs=text_vecs, targets=targets)
-    print(f'Preprocessed data saved to "{preproc_filename}"')
-    return text_vecs, targets
+        train_img_embeddings = np.array(train_img_embeddings.cpu())
+        train_labels = np.array(train_labels.cpu())
+        np.savez_compressed(train_embeddings_file, vecs=train_img_embeddings, targets=train_labels)
+        print(f'Training image embeddings saved to "{train_embeddings_file}"')
+
+    if os.path.exists(test_embeddings_file):
+        print("Testing image embeddings found")
+    else:
+        transform = transforms.Compose([transforms.Lambda(custom_transform)])
+        test_set = datasets.FER2013(root=data_path, transform=transform, split="train")
+
+        test_loader = torch.utils.data.DataLoader(
+            test_set, batch_size=batch_size, shuffle=True, num_workers=8
+        )
+        with torch.inference_mode():
+            test_img_embeddings = []
+            test_labels = []
+            for image_batch, label_batch in tqdm(test_loader, desc="Producing test image vectors"):
+                features = model.get_image_features(
+                    **processor(images=image_batch, return_tensors="pt").to(device)
+                )
+                test_labels.append(label_batch)
+                test_img_embeddings.append(features)
+            test_img_embeddings = torch.cat(test_img_embeddings)
+            test_labels = torch.cat(test_labels)
+
+        test_img_embeddings = np.array(test_img_embeddings.cpu())
+        test_labels = np.array(test_labels.cpu())
+        np.savez_compressed(test_embeddings_file, vecs=test_img_embeddings, targets=test_labels)
+        print(f'Testing image embeddings saved to "{test_embeddings_file}"')
+        return train_img_embeddings, train_labels, test_img_embeddings, test_labels
+
+
+def create_text_embeddings(model=None, processor=None):
+
+    if model == None:
+        model = AutoModel.from_pretrained(MODEL_ID).to(device)
+    if processor == None:
+        processor = AutoProcessor.from_pretrained(MODEL_ID)
+
+    text_embeddings_file = os.path.join(embeddings_path, "text_embeddings.npz")
+
+    # Ensure the embedding directory exists
+    os.makedirs(embeddings_path, exist_ok=True)
+
+    if os.path.exists(text_embeddings_file):
+        print("Text embeddings found")
+    else:
+        phrases = [
+            "An angry human face",
+            "A disgusted human face",
+            "A fearful human face",
+            "A happy human face",
+            "A neutral human face",
+            "A sad human face",
+            "A surprised human face",
+        ]
+        targets = np.array(range(len(phrases)))
+        with torch.inference_mode():
+            text_vecs = model.get_text_features(
+                **processor(text=phrases, return_tensors="pt", padding=True).to(device)
+            )
+
+        text_vecs = np.array(text_vecs.cpu())
+        np.savez_compressed(text_embeddings_file, vecs=text_vecs, targets=targets)
+        print(f'Preprocessed data saved to "{text_embeddings_file}"')
+        return text_vecs, targets
+
+
+if __name__ == "__main__":
+    if ARGS.create_image_embeddings:
+        create_image_embeddings()
+    if ARGS.create_text_embeddings:
+        create_text_embeddings()

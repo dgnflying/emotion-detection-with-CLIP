@@ -15,44 +15,20 @@
 1. Download the FER2013 test and train set `fer2013.tar.gz` file at `https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data?select=test.csv`
 
 2. Create a `data` folder in your workspace
-3. Create a `FER2013` folder in your `data` folder
-4. Add the contents of the `fer2013.tar.gz` file to your FER2013 folder
+3. Create a `fer2013` folder in your `data` folder
+4. Add the contents of the `fer2013.tar.gz` file to your fer2013 folder
 
 
 Your data folder should have this ***EXACT*** structure:
 
 ```
 	├── data
-	│   ├── FER2013
-	│   │   ├── test.csv
-	│   │   ├── train.csv
+	│   ├── fer2013
+	│   │   ├── fer2013.csv
  ```
 
-5. Install project dependencies:
+5. Install project dependencies
 
-	With **pip**:
-```
-	pip install scikit-learn
-	
-	pip install Pillow
-	
-	pip install tqdm
-	
-	pip install matplotlib
-	
-	pip install seaborn
-```
-    Or install with **conda**:
-```
-	conda install scikit-learn
-	
-	conda install pillow
-	
-	conda install tqdm
-	
-	conda install matplotlib
-	
-	conda install seaborn
 ```
 ## Creating a model
 

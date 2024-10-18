@@ -1,16 +1,16 @@
 
 # clip-capabilities
 
-•	Generates AI models that detect human facial emotion and text/image embeddings of human facial-related data
+•	Generate AI models that detect human facial emotion and text/image embeddings of human facial-related data
 
-•	Displays emotion model loss curve and confusion matrix graphs
+•	Display emotion model performance data (i.e. loss curve, confusion matrix, etc.)
 
-•	Plots image and text embeddings of human facial-related data for collection and comparison
+•	Plot image and text embeddings of human facial-related data for collection and comparison
 
   
 
 # Instructions
-## Getting Started
+## Dependencies
 
 1. Download the FER2013 test and train set `fer2013.tar.gz` file at `https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data?select=test.csv`
 
@@ -32,27 +32,27 @@ Your data folder should have this ***EXACT*** structure:
 
 	With **pip**:
 	
-	```pip install scikit-learn```
+	pip install scikit-learn
 	
-	```pip install Pillow```
+	pip install Pillow
 	
-	```pip install tqdm```
+	pip install tqdm
 	
-	```pip install matplotlib```
+	pip install matplotlib
+	
+	pip install seaborn
 
-	```pip install seaborn```
-	
-	Or with **conda**:
-	
-	```conda install scikit-learn```
-	
-	```conda install pillow```
-	
-	```conda install tqdm```
-	
-	```conda install matplotlib```
+Or install with **conda**:
 
-	```conda install seaborn```
+	conda install scikit-learn
+	
+	conda install pillow
+	
+	conda install tqdm
+	
+	conda install matplotlib
+	
+	conda install seaborn
 
 ## Creating a model
 

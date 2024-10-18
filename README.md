@@ -31,7 +31,7 @@ Your data folder should have this ***EXACT*** structure:
 5. Install project dependencies:
 
 	With **pip**:
-	
+```
 	pip install scikit-learn
 	
 	pip install Pillow
@@ -41,9 +41,9 @@ Your data folder should have this ***EXACT*** structure:
 	pip install matplotlib
 	
 	pip install seaborn
-
-Or install with **conda**:
-
+```
+    Or install with **conda**:
+```
 	conda install scikit-learn
 	
 	conda install pillow
@@ -53,7 +53,7 @@ Or install with **conda**:
 	conda install matplotlib
 	
 	conda install seaborn
-
+```
 ## Creating a model
 
 1. Run `py generate_model.py` in the terminal:

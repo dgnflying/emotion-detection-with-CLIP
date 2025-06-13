@@ -1,5 +1,5 @@
 
-# emotion-detection-with-CLIP
+# Purpose
 
 •	Generate AI models that detect human facial emotion and text/image embeddings of human facial-related data
 

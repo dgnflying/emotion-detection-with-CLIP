@@ -29,7 +29,6 @@ Your data folder should have this ***EXACT*** structure:
 
 5. Install project dependencies
 
-```
 ## Creating a model
 
 1. Run `py generate_model.py` in the terminal:
